@@ -4,739 +4,643 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>NC Road Ready — Permit Practice</title>
+<title>NC Road Ready</title>
 <style>
 :root{
-  --green:#58cc02; --green-dk:#46a302; --green-bg:#d7ffb8;
-  --blue:#1cb0f6; --blue-dk:#1899d6; --blue-bg:#ddf4ff;
-  --red:#ff4b4b; --red-dk:#ea2b2b; --red-bg:#ffdfe0;
-  --gold:#ffc800; --gold-dk:#e6a800;
-  --purple:#ce82ff; --purple-dk:#a568cc;
-  --ink:#4b4b4b; --ink-lt:#777; --line:#e5e5e5; --card:#ffffff; --bg:#f7f7f7;
-  --asphalt:#3f4756; --asphalt-dk:#333a47;
-  --radius:16px;
+  --green:#58cc02; --green-shadow:#58a700; --green-lite:#d7ffb8; --green-text:#58a700;
+  --blue:#1cb0f6; --blue-shadow:#1899d6; --blue-lite:#ddf4ff; --blue-border:#84d8ff; --blue-text:#1cb0f6;
+  --red:#ff4b4b; --red-shadow:#ea2b2b; --red-lite:#ffdfe0; --red-text:#ea2b2b;
+  --gold:#ffc800; --gold-shadow:#e6a800; --gold-text:#cd7900;
+  --purple:#ce82ff; --purple-text:#a560e8;
+  --ink:#4b4b4b; --ink-2:#777777; --gray:#afafaf; --line:#e5e5e5; --bg:#ffffff;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-html,body{margin:0;padding:0;height:100%;}
+html,body{margin:0;padding:0;}
 body{
-  font-family:ui-rounded,"SF Pro Rounded","Nunito","Quicksand","Comic Sans MS",system-ui,-apple-system,sans-serif;
+  font-family:ui-rounded,"SF Pro Rounded","Nunito","Varela Round","Quicksand",system-ui,-apple-system,sans-serif;
   background:var(--bg); color:var(--ink);
   -webkit-font-smoothing:antialiased;
-  overscroll-behavior:none;
   user-select:none;-webkit-user-select:none;
+  overscroll-behavior:none;
 }
-#app{max-width:820px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column;padding:0 20px calc(20px + env(safe-area-inset-bottom));}
-.screen{display:none;flex:1;flex-direction:column;animation:fadeUp .35s ease both;}
+button{font-family:inherit;}
+.screen{display:none;min-height:100dvh;flex-direction:column;}
 .screen.active{display:flex;}
-@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-@keyframes pop{0%{transform:scale(.6)}70%{transform:scale(1.08)}100%{transform:scale(1)}}
-@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
-@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-@keyframes wiggle{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
-@media (prefers-reduced-motion: reduce){
-  *,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important;}
-}
+@keyframes pop{0%{transform:scale(.5)}70%{transform:scale(1.1)}100%{transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-9px)}40%{transform:translateX(9px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+@keyframes floaty{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,-8px)}}
+@keyframes owlbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important;}}
 
-/* ============ Chunky button system ============ */
-.btn{
-  display:inline-flex;align-items:center;justify-content:center;gap:10px;
-  font:inherit;font-weight:800;letter-spacing:.6px;text-transform:uppercase;
-  border-radius:var(--radius);border:none;cursor:pointer;
-  padding:16px 28px;font-size:17px;color:#fff;
-  background:var(--green);box-shadow:0 4px 0 var(--green-dk);
-  transition:filter .15s, transform .05s;
-  touch-action:manipulation;
+/* ================= DUO BUTTON ================= */
+.dbtn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  font-weight:800;font-size:15px;letter-spacing:.8px;text-transform:uppercase;
+  color:#fff;background:var(--green);
+  border:none;border-radius:16px;padding:0 24px;height:50px;
+  box-shadow:0 4px 0 var(--green-shadow);cursor:pointer;
+  transition:filter .15s;touch-action:manipulation;
 }
-.btn:active{transform:translateY(4px);box-shadow:0 0 0 var(--green-dk);}
-.btn.blue{background:var(--blue);box-shadow:0 4px 0 var(--blue-dk);}
-.btn.blue:active{box-shadow:0 0 0 var(--blue-dk);}
-.btn.red{background:var(--red);box-shadow:0 4px 0 var(--red-dk);}
-.btn.red:active{box-shadow:0 0 0 var(--red-dk);}
-.btn.ghost{background:#fff;color:var(--blue);box-shadow:0 4px 0 var(--line);border:2px solid var(--line);}
-.btn.ghost:active{box-shadow:0 0 0 var(--line);}
-.btn.wide{width:100%;}
-.btn:disabled{background:var(--line);color:#afafaf;box-shadow:0 4px 0 #d8d8d8;cursor:default;}
+.dbtn:active{transform:translateY(4px);box-shadow:none;}
+.dbtn.blue{background:var(--blue);box-shadow:0 4px 0 var(--blue-shadow);}
+.dbtn.blue:active{box-shadow:none;}
+.dbtn.red{background:var(--red);box-shadow:0 4px 0 var(--red-shadow);}
+.dbtn.red:active{box-shadow:none;}
+.dbtn.ghost{background:#fff;color:var(--blue);border:2px solid var(--line);box-shadow:0 2px 0 var(--line);height:50px;}
+.dbtn.ghost:active{box-shadow:none;transform:translateY(2px);}
+.dbtn.ghost.gray{color:var(--gray);}
+.dbtn:disabled{background:var(--line);color:var(--gray);box-shadow:none;cursor:default;transform:none;}
+.dbtn.wide{width:100%;}
 
-/* ============ Home ============ */
-.home-hero{text-align:center;padding:34px 10px 6px;}
-.mascot{font-size:74px;display:inline-block;animation:bounce 2.6s ease-in-out infinite;}
-h1.title{font-size:clamp(28px,5vw,40px);margin:8px 0 4px;color:#3c3c3c;font-weight:900;}
-.subtitle{color:var(--ink-lt);font-weight:700;margin:0 0 8px;font-size:16px;}
-.session-chip{display:inline-flex;gap:14px;background:#fff;border:2px solid var(--line);border-radius:999px;padding:8px 18px;font-weight:800;font-size:14px;color:var(--ink-lt);margin-top:8px;}
-.session-chip b{color:var(--gold-dk);}
-.modes{display:grid;gap:16px;margin:24px 0;grid-template-columns:1fr;}
-@media(min-width:720px){.modes{grid-template-columns:repeat(3,1fr);}}
-.mode-card{
-  background:var(--card);border:2px solid var(--line);border-bottom-width:5px;border-radius:20px;
-  padding:22px 20px;text-align:left;cursor:pointer;font:inherit;color:var(--ink);
-  display:flex;flex-direction:column;gap:8px;transition:transform .12s, border-color .12s;
-  touch-action:manipulation;
+/* ================= HOME ================= */
+.statbar{
+  position:sticky;top:0;z-index:10;background:#fff;border-bottom:2px solid var(--line);
+  display:flex;align-items:center;justify-content:center;gap:26px;
+  padding:12px 16px calc(12px);
 }
-.mode-card:active{transform:translateY(3px);border-bottom-width:2px;}
-.mode-emoji{font-size:40px;}
-.mode-name{font-size:19px;font-weight:900;}
-.mode-desc{font-size:14px;color:var(--ink-lt);font-weight:600;line-height:1.45;}
-.mode-tag{align-self:flex-start;font-size:11px;font-weight:900;letter-spacing:1px;text-transform:uppercase;padding:4px 10px;border-radius:999px;}
-.tag-green{background:var(--green-bg);color:var(--green-dk);}
-.tag-blue{background:var(--blue-bg);color:var(--blue-dk);}
-.tag-purple{background:#f3e2ff;color:var(--purple-dk);}
-.mode-card.locked{opacity:.55;}
-.footnote{text-align:center;color:#9a9a9a;font-size:12.5px;font-weight:600;line-height:1.5;padding-bottom:8px;}
+.stat-item{display:flex;align-items:center;gap:6px;font-weight:800;font-size:17px;}
+.stat-item .ic{font-size:22px;}
+.stat-item.fire{color:#ff9600;} .stat-item.gem{color:var(--blue);} .stat-item.pin{color:var(--red);}
+.home-scroll{flex:1;overflow-y:auto;padding-bottom:110px;}
+.unit-banner{
+  margin:16px auto 8px;max-width:560px;width:calc(100% - 32px);
+  background:var(--green);border-radius:16px;box-shadow:0 4px 0 var(--green-shadow);
+  color:#fff;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.unit-banner .u-eyebrow{font-size:13px;font-weight:800;letter-spacing:1px;text-transform:uppercase;opacity:.85;}
+.unit-banner .u-title{font-size:19px;font-weight:800;margin-top:3px;}
+.unit-banner .u-book{font-size:26px;background:rgba(255,255,255,.22);border-radius:12px;padding:8px 12px;}
+.path{position:relative;max-width:560px;margin:34px auto 0;width:100%;display:flex;flex-direction:column;align-items:center;gap:34px;}
+.pathnode{position:relative;display:flex;flex-direction:column;align-items:center;background:none;border:none;cursor:pointer;padding:0;touch-action:manipulation;}
+.pathnode .circle{
+  width:78px;height:74px;border-radius:50% / 46%;
+  background:var(--green);box-shadow:0 8px 0 var(--green-shadow);
+  display:flex;align-items:center;justify-content:center;font-size:34px;
+  transition:transform .1s;
+}
+.pathnode:active .circle{transform:translateY(8px);box-shadow:none;}
+.pathnode .nlabel{margin-top:12px;font-weight:800;font-size:15px;color:var(--ink);}
+.pathnode .nsub{font-size:12.5px;font-weight:700;color:var(--gray);margin-top:2px;}
+.pathnode.gold .circle{background:var(--gold);box-shadow:0 8px 0 var(--gold-shadow);}
+.pathnode.gold:active .circle{box-shadow:none;}
+.pathnode.blue .circle{background:var(--blue);box-shadow:0 8px 0 var(--blue-shadow);}
+.pathnode.blue:active .circle{box-shadow:none;}
+.pathnode.locked .circle{background:#e5e5e5;box-shadow:0 8px 0 #cfcfcf;font-size:28px;filter:grayscale(1);}
+.pathnode.locked .nlabel{color:var(--gray);}
+.pathnode .start-bubble{
+  position:absolute;top:-46px;left:50%;transform:translateX(-50%);
+  background:#fff;border:2px solid var(--line);border-radius:12px;
+  color:var(--green);font-weight:800;font-size:14px;letter-spacing:1px;text-transform:uppercase;
+  padding:8px 16px;animation:floaty 2s ease-in-out infinite;white-space:nowrap;
+}
+.pathnode .start-bubble::after{
+  content:"";position:absolute;left:50%;bottom:-7px;transform:translateX(-50%) rotate(45deg);
+  width:12px;height:12px;background:#fff;border-right:2px solid var(--line);border-bottom:2px solid var(--line);
+}
+.offL{transform:translateX(-72px);} .offR{transform:translateX(72px);}
+.owl{position:absolute;right:34px;top:150px;font-size:64px;animation:owlbob 2.4s ease-in-out infinite;pointer-events:none;}
+@media(max-width:430px){.owl{right:8px;font-size:52px;} .offL{transform:translateX(-56px);} .offR{transform:translateX(56px);}}
+.home-note{max-width:420px;margin:40px auto 0;text-align:center;color:var(--gray);font-size:12.5px;font-weight:700;line-height:1.6;padding:0 24px;}
 
-/* ============ Quiz header: the highway ============ */
-.quiz-top{display:flex;align-items:center;gap:14px;padding:16px 0 10px;}
-.icon-btn{background:none;border:none;font-size:26px;color:#b7b7b7;cursor:pointer;padding:6px;font-weight:900;line-height:1;}
-.highway{position:relative;flex:1;height:26px;background:var(--asphalt);border-radius:999px;box-shadow:inset 0 -3px 0 var(--asphalt-dk);overflow:visible;}
-.highway::after{ /* dashed center line */
-  content:"";position:absolute;left:12px;right:12px;top:50%;height:3px;transform:translateY(-50%);
-  background-image:linear-gradient(90deg,var(--gold) 0 14px,transparent 14px 26px);
-  background-size:26px 3px;border-radius:2px;opacity:.9;
+/* tab bar */
+.tabbar{
+  position:fixed;left:0;right:0;bottom:0;z-index:20;background:#fff;border-top:2px solid var(--line);
+  display:flex;justify-content:space-around;align-items:center;
+  padding:8px 10px calc(8px + env(safe-area-inset-bottom));
 }
-.highway-fill{position:absolute;inset:0;width:0%;background:var(--green);border-radius:999px;box-shadow:inset 0 -3px 0 var(--green-dk);transition:width .45s cubic-bezier(.3,1.4,.5,1);z-index:1;}
-.car{position:absolute;top:50%;left:0%;transform:translate(-40%,-58%);font-size:30px;z-index:2;transition:left .45s cubic-bezier(.3,1.4,.5,1);filter:drop-shadow(0 2px 1px rgba(0,0,0,.25));}
-.hearts{display:flex;gap:3px;font-size:19px;min-width:max-content;}
-.hearts .lost{filter:grayscale(1);opacity:.35;transform:scale(.85);}
-.streak-pill{display:flex;align-items:center;gap:5px;font-weight:900;color:var(--gold-dk);font-size:17px;min-width:52px;justify-content:flex-end;}
-.streak-pill.hot{animation:wiggle .5s ease-in-out infinite;}
+.tab{background:none;border:2px solid transparent;border-radius:14px;font-size:26px;padding:7px 20px;cursor:pointer;position:relative;}
+.tab.active{border-color:var(--blue-border);background:var(--blue-lite);}
+.tab .dot{position:absolute;top:4px;right:10px;background:var(--red);color:#fff;font-size:10px;font-weight:800;border-radius:999px;min-width:17px;height:17px;display:flex;align-items:center;justify-content:center;padding:0 4px;}
 
-/* ============ Question ============ */
-.q-wrap{flex:1;display:flex;flex-direction:column;justify-content:center;max-width:680px;width:100%;margin:0 auto;}
-.q-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:13px;font-weight:800;color:#a5a5a5;text-transform:uppercase;letter-spacing:1px;}
-.q-cat{background:#fff;border:2px solid var(--line);padding:4px 12px;border-radius:999px;}
-.q-text{font-size:clamp(20px,3.2vw,26px);font-weight:900;line-height:1.35;color:#3c3c3c;margin:4px 0 22px;animation:fadeUp .3s ease both;}
-.answers{display:grid;gap:12px;}
-@media(min-width:640px){.answers.grid2{grid-template-columns:1fr 1fr;}}
-.answer{
-  position:relative;background:#fff;border:2px solid var(--line);border-bottom-width:5px;border-radius:16px;
-  padding:16px 18px 16px 56px;font:inherit;font-size:17px;font-weight:700;color:var(--ink);
-  text-align:left;cursor:pointer;line-height:1.35;min-height:60px;
-  transition:transform .1s,border-color .12s,background .12s;touch-action:manipulation;
+/* ================= QUIZ ================= */
+.quiz-head{
+  max-width:720px;width:100%;margin:0 auto;
+  display:flex;align-items:center;gap:16px;padding:18px 20px 6px;
 }
-.answer .key{
+.xbtn{background:none;border:none;font-size:22px;color:var(--gray);font-weight:800;cursor:pointer;padding:6px;line-height:1;}
+.pbar{flex:1;height:16px;background:var(--line);border-radius:999px;overflow:hidden;}
+.pfill{height:100%;width:0%;background:var(--green);border-radius:999px;position:relative;transition:width .4s cubic-bezier(.3,1.2,.5,1);}
+.pfill::after{content:"";position:absolute;left:8px;right:8px;top:4px;height:4px;border-radius:999px;background:rgba(255,255,255,.35);}
+.heartbox{display:flex;align-items:center;gap:5px;font-weight:800;font-size:18px;color:var(--red);}
+.heartbox .ic{font-size:22px;}
+.quiz-body{flex:1;max-width:640px;width:100%;margin:0 auto;padding:8px 20px 190px;display:flex;flex-direction:column;}
+.qlabel-row{display:flex;align-items:center;justify-content:space-between;margin:14px 0 6px;}
+.qlabel{color:var(--purple-text);font-weight:800;font-size:13px;letter-spacing:1.2px;text-transform:uppercase;}
+.flagbtn{
+  background:#fff;border:2px solid var(--line);border-radius:12px;box-shadow:0 2px 0 var(--line);
+  font-weight:800;font-size:12px;letter-spacing:.8px;text-transform:uppercase;color:var(--gray);
+  padding:8px 14px;cursor:pointer;transition:all .12s;touch-action:manipulation;
+}
+.flagbtn:active{transform:translateY(2px);box-shadow:none;}
+.flagbtn.on{background:#fff5cc;border-color:var(--gold);box-shadow:0 2px 0 var(--gold-shadow);color:var(--gold-text);}
+.qtext{font-size:clamp(20px,3.4vw,26px);font-weight:800;line-height:1.35;color:#3c3c3c;margin:6px 0 26px;}
+.qcount{font-size:13px;font-weight:800;color:var(--gray);letter-spacing:.5px;}
+.choices{display:flex;flex-direction:column;gap:10px;}
+.choice{
+  position:relative;background:#fff;border:2px solid var(--line);border-radius:12px;
+  box-shadow:0 2px 0 var(--line);
+  padding:14px 16px 14px 58px;text-align:left;cursor:pointer;
+  font-size:17px;font-weight:700;color:var(--ink);line-height:1.4;min-height:58px;
+  transition:background .12s,border-color .12s,color .12s;touch-action:manipulation;
+}
+.choice .knum{
   position:absolute;left:14px;top:50%;transform:translateY(-50%);
-  width:30px;height:30px;border-radius:9px;border:2px solid var(--line);
-  display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:#b0b0b0;
+  width:28px;height:28px;border:2px solid var(--line);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:800;color:var(--gray);
 }
-.answer:active{transform:translateY(3px);border-bottom-width:2px;}
-.answer.picked{border-color:var(--blue);background:var(--blue-bg);color:var(--blue-dk);}
-.answer.picked .key{border-color:var(--blue);color:var(--blue-dk);}
-.answer.correct{border-color:var(--green);background:var(--green-bg);color:var(--green-dk);animation:pop .35s ease;}
-.answer.correct .key{border-color:var(--green);color:var(--green-dk);}
-.answer.wrong{border-color:var(--red);background:var(--red-bg);color:var(--red-dk);animation:shake .4s ease;}
-.answer.wrong .key{border-color:var(--red);color:var(--red-dk);}
-.answer.dim{opacity:.45;}
-.answer:disabled{cursor:default;}
+.choice:active{transform:translateY(2px);box-shadow:none;}
+.choice.sel{border-color:var(--blue-border);box-shadow:0 2px 0 var(--blue-border);background:var(--blue-lite);color:var(--blue-text);}
+.choice.sel .knum{border-color:var(--blue-border);color:var(--blue-text);}
+.choice.right{border-color:#a5ed6e;box-shadow:0 2px 0 #a5ed6e;background:var(--green-lite);color:var(--green-text);animation:pop .3s ease;}
+.choice.right .knum{border-color:#a5ed6e;color:var(--green-text);}
+.choice.miss{border-color:#ffb2b2;box-shadow:0 2px 0 #ffb2b2;background:var(--red-lite);color:var(--red-text);animation:shake .4s ease;}
+.choice.miss .knum{border-color:#ffb2b2;color:var(--red-text);}
+.choice.faded{opacity:.5;}
+.choice:disabled{cursor:default;}
 
-.q-actions{display:flex;gap:12px;margin-top:22px;align-items:center;}
-.unsure-btn{
-  flex:1;display:flex;align-items:center;justify-content:center;gap:8px;
-  font:inherit;font-weight:800;font-size:15px;color:#b48a00;
-  background:#fff;border:2px solid var(--line);border-bottom-width:5px;border-radius:14px;padding:13px;cursor:pointer;
-  transition:all .12s;touch-action:manipulation;text-transform:uppercase;letter-spacing:.5px;
+/* footer */
+.qfooter{
+  position:fixed;left:0;right:0;bottom:0;z-index:30;background:#fff;border-top:2px solid var(--line);
+  transition:background .2s;
 }
-.unsure-btn:active{transform:translateY(3px);border-bottom-width:2px;}
-.unsure-btn.on{background:#fff6d6;border-color:var(--gold);color:#a37b00;}
-.skip-btn{flex:1;font:inherit;font-weight:800;font-size:15px;color:#9a9a9a;background:#fff;border:2px solid var(--line);border-bottom-width:5px;border-radius:14px;padding:13px;cursor:pointer;transition:all .12s;text-transform:uppercase;letter-spacing:.5px;touch-action:manipulation;}
-.skip-btn:active{transform:translateY(3px);border-bottom-width:2px;}
-
-/* ============ Feedback sheet ============ */
-.sheet{
-  position:fixed;left:0;right:0;bottom:0;transform:translateY(110%);
-  transition:transform .3s cubic-bezier(.3,1.2,.5,1);z-index:40;
+.qfooter-inner{max-width:720px;margin:0 auto;padding:16px 20px calc(16px + env(safe-area-inset-bottom));}
+.qf-row{display:flex;align-items:center;justify-content:space-between;gap:14px;}
+.qf-row .dbtn{min-width:140px;}
+@media(max-width:480px){.qf-row .dbtn{min-width:110px;padding:0 16px;}}
+.qfooter.good{background:var(--green-lite);border-top-color:var(--green-lite);}
+.qfooter.bad{background:var(--red-lite);border-top-color:var(--red-lite);}
+.fb{display:none;}
+.qfooter.good .fb,.qfooter.bad .fb{display:flex;align-items:flex-start;gap:14px;margin-bottom:14px;}
+.qfooter.good .skipcheck,.qfooter.bad .skipcheck{display:none;}
+.fb-icon{
+  width:56px;height:56px;border-radius:50%;background:#fff;flex:none;
+  display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:900;animation:pop .35s ease;
 }
-.sheet.show{transform:translateY(0);}
-.sheet-inner{max-width:820px;margin:0 auto;padding:20px 22px calc(22px + env(safe-area-inset-bottom));border-radius:24px 24px 0 0;}
-.sheet.good .sheet-inner{background:var(--green-bg);}
-.sheet.bad .sheet-inner{background:var(--red-bg);}
-.sheet-head{display:flex;align-items:center;gap:12px;font-size:22px;font-weight:900;}
-.sheet.good .sheet-head{color:var(--green-dk);}
-.sheet.bad .sheet-head{color:var(--red-dk);}
-.sheet-emoji{font-size:34px;animation:pop .4s ease;}
-.sheet-exp{margin:8px 0 16px;font-weight:600;font-size:15px;line-height:1.5;color:#5b5b5b;}
-.sheet.bad .sheet-exp b{color:var(--red-dk);}
-.sheet .btn{width:100%;}
+.qfooter.good .fb-icon{color:var(--green-text);} .qfooter.bad .fb-icon{color:var(--red-text);}
+.fb-title{font-size:21px;font-weight:800;margin:2px 0 3px;}
+.qfooter.good .fb-title{color:var(--green-text);} .qfooter.bad .fb-title{color:var(--red-text);}
+.fb-exp{font-size:14.5px;font-weight:600;line-height:1.45;}
+.qfooter.good .fb-exp{color:#4a8a05;} .qfooter.bad .fb-exp{color:#c22b2b;}
+.fb-actions{display:flex;justify-content:flex-end;}
+.qfooter.bad .fb-actions .dbtn{background:var(--red);box-shadow:0 4px 0 var(--red-shadow);}
+.qfooter.bad .fb-actions .dbtn:active{box-shadow:none;}
 
-/* ============ Results ============ */
-.res-hero{text-align:center;padding:30px 0 8px;}
-.res-emoji{font-size:76px;display:inline-block;animation:pop .5s ease;}
-.res-title{font-size:clamp(26px,4.5vw,36px);font-weight:900;margin:10px 0 6px;}
-.res-sub{color:var(--ink-lt);font-weight:700;font-size:16px;max-width:520px;margin:0 auto;line-height:1.5;}
-.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin:26px 0 8px;}
-.stat{background:#fff;border:2px solid var(--line);border-bottom-width:5px;border-radius:16px;padding:14px;text-align:center;}
-.stat .num{font-size:26px;font-weight:900;}
-.stat .lbl{font-size:11px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:#a5a5a5;margin-top:2px;}
-.stat.green .num{color:var(--green-dk);} .stat.red .num{color:var(--red-dk);}
-.stat.gold .num{color:var(--gold-dk);} .stat.blue .num{color:var(--blue-dk);}
-.stat.purple .num{color:var(--purple-dk);}
-.res-section{margin:18px 0;}
-.res-h{font-size:14px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:#a5a5a5;margin:0 0 10px;}
-.review-card{background:#fff;border:2px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:10px;font-size:14.5px;font-weight:600;line-height:1.5;}
-.review-card .rq{font-weight:800;color:#3c3c3c;}
-.review-card .ra{color:var(--red-dk);}
-.review-card .rc{color:var(--green-dk);}
-.review-card .badges{margin-top:6px;display:flex;gap:6px;flex-wrap:wrap;}
-.mini-badge{font-size:10.5px;font-weight:900;letter-spacing:.6px;text-transform:uppercase;padding:3px 9px;border-radius:999px;}
-.mb-time{background:var(--blue-bg);color:var(--blue-dk);}
-.mb-unsure{background:#fff1c2;color:#a37b00;}
-.mb-skip{background:#eee;color:#8a8a8a;}
-.res-actions{display:flex;flex-direction:column;gap:12px;margin:22px auto;max-width:420px;width:100%;}
-.empty-note{background:#fff;border:2px dashed var(--line);border-radius:16px;padding:16px;text-align:center;color:var(--ink-lt);font-weight:700;font-size:14px;}
+/* ================= RESULTS ================= */
+.res-scroll{flex:1;overflow-y:auto;}
+.res-inner{max-width:640px;margin:0 auto;padding:40px 20px 30px;display:flex;flex-direction:column;align-items:center;}
+.res-owl{font-size:88px;animation:pop .45s ease;}
+.res-title{font-size:clamp(26px,5vw,34px);font-weight:800;color:var(--gold-text);margin:14px 0 6px;text-align:center;}
+.res-title.sad{color:var(--red-text);} .res-title.grow{color:var(--blue-text);}
+.res-sub{color:var(--ink-2);font-weight:600;font-size:15.5px;text-align:center;line-height:1.55;max-width:460px;margin:0 0 26px;}
+.tiles{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:8px;}
+.tile{border-radius:16px;padding:3px;min-width:104px;}
+.tile .t-head{color:#fff;font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;text-align:center;padding:5px 8px 6px;}
+.tile .t-body{background:#fff;border-radius:13px;padding:10px 8px;text-align:center;font-size:21px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:6px;}
+.tile.gold{background:var(--gold);} .tile.gold .t-body{color:var(--gold-text);}
+.tile.blue{background:var(--blue);} .tile.blue .t-body{color:var(--blue);}
+.tile.green{background:var(--green);} .tile.green .t-body{color:var(--green-text);}
+.tile.red{background:var(--red);} .tile.red .t-body{color:var(--red-text);}
+.chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:14px 0 8px;}
+.chip{font-size:12px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;padding:7px 14px;border-radius:999px;border:2px solid var(--line);color:var(--ink-2);background:#fff;}
+.res-sections{width:100%;margin-top:18px;}
+.res-h{font-size:13px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--gray);margin:20px 0 10px;}
+.rcard{background:#fff;border:2px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:10px;font-size:14.5px;font-weight:600;line-height:1.5;box-shadow:0 2px 0 var(--line);}
+.rcard .rq{font-weight:800;color:#3c3c3c;}
+.rcard .ra{color:var(--red-text);margin-top:3px;}
+.rcard .rc{color:var(--green-text);margin-top:2px;}
+.rcard .badges{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;}
+.mini{font-size:10.5px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;padding:4px 10px;border-radius:999px;}
+.m-time{background:var(--blue-lite);color:var(--blue-shadow);}
+.m-unsure{background:#fff1c2;color:var(--gold-text);}
+.m-skip{background:#eee;color:#8a8a8a;}
+.m-good{background:var(--green-lite);color:var(--green-text);}
+.res-actions{width:100%;max-width:420px;display:flex;flex-direction:column;gap:12px;margin:26px auto 10px;}
+.empty-note{background:#fff;border:2px dashed var(--line);border-radius:16px;padding:18px;text-align:center;color:var(--ink-2);font-weight:700;font-size:14px;width:100%;}
 
-/* confetti canvas */
-#confetti{position:fixed;inset:0;pointer-events:none;z-index:60;}
-/* quit modal */
-.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:24px;}
+/* modal + misc */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:50;padding:24px;}
 .modal-bg.show{display:flex;}
-.modal{background:#fff;border-radius:22px;padding:26px;max-width:380px;width:100%;text-align:center;animation:pop .3s ease;}
-.modal h3{margin:0 0 8px;font-size:20px;font-weight:900;}
-.modal p{margin:0 0 18px;color:var(--ink-lt);font-weight:600;font-size:14.5px;line-height:1.5;}
-.modal .btn{width:100%;margin-bottom:10px;}
-.sound-toggle{position:fixed;top:14px;right:14px;z-index:45;background:#fff;border:2px solid var(--line);border-radius:999px;width:44px;height:44px;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.modal{background:#fff;border-radius:20px;padding:26px;max-width:380px;width:100%;text-align:center;animation:pop .3s ease;}
+.modal .m-owl{font-size:56px;}
+.modal h3{margin:8px 0 8px;font-size:20px;font-weight:800;color:#3c3c3c;}
+.modal p{margin:0 0 20px;color:var(--ink-2);font-weight:600;font-size:14.5px;line-height:1.5;}
+.modal .dbtn{width:100%;margin-bottom:10px;}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:60;}
+.sound-toggle{position:fixed;top:10px;right:12px;z-index:45;background:#fff;border:2px solid var(--line);box-shadow:0 2px 0 var(--line);border-radius:12px;width:42px;height:42px;font-size:18px;cursor:pointer;}
+.quiz-mode .sound-toggle{display:none;}
 </style>
 </head>
 <body>
 <canvas id="confetti"></canvas>
 <button class="sound-toggle" id="soundToggle" aria-label="Toggle sound">🔊</button>
 
-<div id="app">
-
-  <!-- HOME -->
-  <section class="screen active" id="screen-home">
-    <div class="home-hero">
-      <span class="mascot">🚗</span>
-      <h1 class="title">NC Road Ready</h1>
-      <p class="subtitle">Practice for your North Carolina permit test — the fun way.</p>
-      <div class="session-chip">
-        <span>⭐ <b id="chipXp">0</b> XP</span>
-        <span>🔥 <b id="chipBest">0</b> best streak</span>
-        <span>📌 <b id="chipReview">0</b> to review</span>
+<!-- ================= HOME ================= -->
+<section class="screen active" id="screen-home">
+  <div class="statbar">
+    <div class="stat-item fire"><span class="ic">🔥</span><span id="sbStreak">0</span></div>
+    <div class="stat-item gem"><span class="ic">💎</span><span id="sbXp">0</span></div>
+    <div class="stat-item pin"><span class="ic">📌</span><span id="sbReview">0</span></div>
+  </div>
+  <div class="home-scroll">
+    <div class="unit-banner">
+      <div>
+        <div class="u-eyebrow">Section 1, Unit 1</div>
+        <div class="u-title">NC Permit Knowledge Test</div>
       </div>
+      <div class="u-book">📖</div>
     </div>
-    <div class="modes">
-      <button class="mode-card" id="mode1">
-        <span class="mode-emoji">⚡️</span>
-        <span class="mode-name">Quick Test</span>
-        <span class="mode-desc">25 random questions. Lock in 80% and you pass early! Skips allowed — but every question comes back around.</span>
-        <span class="mode-tag tag-green">Just like the real thing</span>
+    <div class="path">
+      <span class="owl">🦉</span>
+      <button class="pathnode" id="mode1">
+        <span class="start-bubble">Start</span>
+        <span class="circle">⭐️</span>
+        <span class="nlabel">Quick Test</span>
+        <span class="nsub">25 random · pass at 80%</span>
       </button>
-      <button class="mode-card" id="mode2">
-        <span class="mode-emoji">🏁</span>
-        <span class="mode-name">Full Marathon</span>
-        <span class="mode-desc">Every question in the bank, start to finish. The ultimate warm-up lap before test day.</span>
-        <span class="mode-tag tag-blue"><span id="bankCount"></span> questions</span>
+      <button class="pathnode gold offL" id="mode2">
+        <span class="circle">🏆</span>
+        <span class="nlabel">Full Marathon</span>
+        <span class="nsub" id="marathonSub">every question</span>
       </button>
-      <button class="mode-card" id="mode3">
-        <span class="mode-emoji">🎯</span>
-        <span class="mode-name">Trouble Spots</span>
-        <span class="mode-desc">Replays everything you got wrong or marked unsure this session. Answer them right to clear them out.</span>
-        <span class="mode-tag tag-purple"><span id="reviewCount">0</span> waiting</span>
+      <button class="pathnode blue offR" id="mode3">
+        <span class="circle" id="node3Icon">🎯</span>
+        <span class="nlabel">Trouble Spots</span>
+        <span class="nsub" id="node3Sub">0 to review</span>
       </button>
     </div>
-    <p class="footnote">Built from the official North Carolina Driver Handbook. Trouble Spots remembers this session only — keep the tab open between rounds. Good luck! 🍀</p>
-  </section>
+    <p class="home-note">Built from the official North Carolina Driver Handbook. Trouble Spots remembers what you miss or mark unsure — for this session only, so keep the tab open between rounds. 🍀</p>
+  </div>
+  <div class="tabbar">
+    <button class="tab active" id="tabLearn" aria-label="Learn">🏠</button>
+    <button class="tab" id="tabReview" aria-label="Review">🎯<span class="dot" id="tabDot" style="display:none">0</span></button>
+    <button class="tab" id="tabQuest" aria-label="Marathon">🏆</button>
+  </div>
+</section>
 
-  <!-- QUIZ -->
-  <section class="screen" id="screen-quiz">
-    <div class="quiz-top">
-      <button class="icon-btn" id="quitBtn" aria-label="Quit">✕</button>
-      <div class="highway">
-        <div class="highway-fill" id="hwFill"></div>
-        <span class="car" id="hwCar">🚙</span>
-      </div>
-      <div class="hearts" id="hearts"></div>
-      <div class="streak-pill" id="streakPill">🔥<span id="streakNum">0</span></div>
+<!-- ================= QUIZ ================= -->
+<section class="screen" id="screen-quiz">
+  <div class="quiz-head">
+    <button class="xbtn" id="quitBtn" aria-label="Quit">✕</button>
+    <div class="pbar"><div class="pfill" id="pfill"></div></div>
+    <div class="heartbox" id="heartbox"><span class="ic">❤️</span><span id="heartNum">6</span></div>
+  </div>
+  <div class="quiz-body">
+    <div class="qlabel-row">
+      <span class="qlabel" id="qCat">ROAD RULES</span>
+      <button class="flagbtn" id="unsureBtn">🚩 Unsure</button>
     </div>
-    <div class="q-wrap">
-      <div class="q-meta">
-        <span class="q-cat" id="qCat"></span>
-        <span id="qCount"></span>
+    <div class="qtext" id="qText"></div>
+    <div class="choices" id="choices"></div>
+    <div style="margin-top:16px"><span class="qcount" id="qCount"></span></div>
+  </div>
+  <div class="qfooter" id="qfooter">
+    <div class="qfooter-inner">
+      <div class="fb">
+        <div class="fb-icon" id="fbIcon">✓</div>
+        <div style="flex:1">
+          <div class="fb-title" id="fbTitle"></div>
+          <div class="fb-exp" id="fbExp"></div>
+        </div>
       </div>
-      <div class="q-text" id="qText"></div>
-      <div class="answers" id="answers"></div>
-      <div class="q-actions">
-        <button class="unsure-btn" id="unsureBtn">🤔 Mark unsure</button>
-        <button class="skip-btn" id="skipBtn">Skip ↷</button>
+      <div class="qf-row skipcheck">
+        <button class="dbtn ghost gray" id="skipBtn">Skip</button>
+        <button class="dbtn" id="checkBtn" disabled>Check</button>
+      </div>
+      <div class="fb-actions" style="display:none" id="fbActions">
+        <button class="dbtn" id="continueBtn">Continue</button>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- RESULTS -->
-  <section class="screen" id="screen-results">
-    <div class="res-hero">
-      <span class="res-emoji" id="resEmoji">🎉</span>
-      <div class="res-title" id="resTitle"></div>
-      <p class="res-sub" id="resSub"></p>
-    </div>
-    <div class="stat-row" id="statRow"></div>
-    <div id="resSections"></div>
+<!-- ================= RESULTS ================= -->
+<section class="screen" id="screen-results">
+  <div class="res-scroll"><div class="res-inner">
+    <span class="res-owl" id="resOwl">🦉</span>
+    <div class="res-title" id="resTitle"></div>
+    <p class="res-sub" id="resSub"></p>
+    <div class="tiles" id="tiles"></div>
+    <div class="chips" id="chips"></div>
+    <div class="res-sections" id="resSections"></div>
     <div class="res-actions">
-      <button class="btn wide" id="againBtn">Play again</button>
-      <button class="btn blue wide" id="troubleBtn">🎯 Drill my trouble spots</button>
-      <button class="btn ghost wide" id="homeBtn">Back to garage</button>
+      <button class="dbtn wide" id="againBtn">Play again</button>
+      <button class="dbtn blue wide" id="troubleBtn">🎯 Drill my trouble spots</button>
+      <button class="dbtn ghost wide" id="homeBtn">Back home</button>
     </div>
-  </section>
-</div>
+  </div></div>
+</section>
 
 <!-- QUIT MODAL -->
 <div class="modal-bg" id="quitModal">
   <div class="modal">
-    <h3>Pull over and stop?</h3>
-    <p>Your progress in this round won't be saved, but anything you missed or marked unsure stays in Trouble Spots.</p>
-    <button class="btn red wide" id="confirmQuit">End this round</button>
-    <button class="btn ghost wide" id="cancelQuit">Keep driving</button>
-  </div>
-</div>
-
-<!-- FEEDBACK SHEET -->
-<div class="sheet" id="sheet">
-  <div class="sheet-inner">
-    <div class="sheet-head"><span class="sheet-emoji" id="sheetEmoji"></span><span id="sheetTitle"></span></div>
-    <p class="sheet-exp" id="sheetExp"></p>
-    <button class="btn" id="continueBtn">Continue</button>
+    <div class="m-owl">🦉</div>
+    <h3>Wait, don't go!</h3>
+    <p>You'll lose your progress in this round — but anything you missed or marked unsure stays saved in Trouble Spots.</p>
+    <button class="dbtn wide" id="cancelQuit">Keep learning</button>
+    <button class="dbtn ghost wide" id="confirmQuit" style="color:var(--red)">End session</button>
   </div>
 </div>
 
 <script>
-/* =====================================================================
-   QUESTION BANK — the TOTAL LIST.
-   Every question is grounded in the North Carolina Driver Handbook.
-   ===================================================================== */
-const BANK = [
-{c:"Alcohol & the Law", q:"Your driving privilege is revoked immediately for at least 30 days if a chemical test shows a BAC of at least:", o:["0.05%","0.08%","0.10%","0.15%"], a:1, e:"0.08% is the legal limit for regular drivers (0.04% in a commercial vehicle)."},
-{c:"Alcohol & the Law", q:"If you refuse to take a required breath or blood test, your license is immediately revoked for at least 30 days, plus a DMV revocation of at least:", o:["3 months","6 months","12 months","5 years"], a:2, e:"Willful refusal means an immediate 30-day revocation plus a minimum 12-month DMV revocation."},
-{c:"Alcohol & the Law", q:"A first DWI conviction brings a mandatory license revocation of:", o:["30 days","6 months","1 year","4 years"], a:2, e:"First conviction: one year. Second: four years. Repeat offenses can mean permanent revocation."},
-{c:"Alcohol & the Law", q:"A driver under 21 convicted of driving with ANY amount of alcohol or drugs in their body loses their license for:", o:["30 days","90 days","6 months","1 year"], a:3, e:"North Carolina has zero tolerance for underage drivers — the revocation is one full year."},
-{c:"Alcohol & the Law", q:"Which of these can actually sober up a person who has been drinking?", o:["Black coffee","A cold shower","A big meal","Time"], a:3, e:"Only time removes alcohol from your system. Coffee, food, and showers don't work."},
-{c:"Alcohol & the Law", q:"Alcohol is a depressant, which means it:", o:["Speeds up your reaction time","Slows brain functions and decision-making","Only affects your vision","Improves confidence and driving"], a:1, e:"It slows brain function, dulls judgment of speed and distance — and gives false confidence."},
-{c:"Points & Penalties", q:"Your license may be suspended if you accumulate how many points within 3 years?", o:["6","8","10","12"], a:3, e:"12 points in three years can mean suspension. At 7 points you may be sent to a driver improvement clinic."},
-{c:"Points & Penalties", q:"Passing a stopped school bus adds how many points to your record?", o:["2","3","4","5"], a:3, e:"It's 5 points — tied with aggressive driving for the most of any regular violation."},
-{c:"Points & Penalties", q:"A first suspension under the point system takes your license for:", o:["30 days","60 days","6 months","12 months"], a:1, e:"First point-system suspension is 60 days, second is 6 months, third is 12 months."},
-{c:"Points & Penalties", q:"Completing a driver improvement clinic deducts how many points from your record?", o:["1","2","3","5"], a:2, e:"Satisfactory completion of the clinic removes 3 points."},
-{c:"Points & Penalties", q:"A provisional licensee (under 18) convicted of a SECOND moving violation within 12 months faces a suspension of:", o:["30 days","60 days","90 days","6 months"], a:0, e:"Second violation: 30 days. Third: 90 days. Fourth: six months."},
-{c:"Points & Penalties", q:"Throwing litter from a vehicle carries a minimum fine of:", o:["$50","$100","$250","$500"], a:2, e:"Littering from a vehicle: at least $250 for a first offense, and the driver is held responsible."},
-{c:"Speed Limits", q:"Unless posted otherwise, the speed limit inside cities and towns is:", o:["25 mph","35 mph","45 mph","55 mph"], a:1, e:"35 mph in cities and towns, 55 outside them, and 70 on interstates."},
-{c:"Speed Limits", q:"The maximum speed limit for a school bus is:", o:["35 mph","45 mph","55 mph","65 mph"], a:1, e:"School buses max out at 45 mph. School activity buses may go 55."},
-{c:"Speed Limits", q:"Driving well BELOW the posted speed limit is:", o:["Always the safest choice","More likely to cause a crash than driving at normal speed","Only dangerous at night","Required in the right lane"], a:1, e:"Studies show a vehicle moving considerably below the posted limit is much more likely to cause or be involved in a crash."},
-{c:"Speed Limits", q:"At 55 mph in ideal conditions, your vehicle needs about how much distance to come to a complete stop?", o:["55 feet","100 feet","211 feet","500 feet"], a:2, e:"About 211 feet — reaction time plus braking distance adds up fast."},
-{c:"Following & Passing", q:"The 'two-second rule' describes:", o:["How long to stop at a stop sign","Safe following distance behind the vehicle ahead","How long a yellow light lasts","Time allowed to merge"], a:1, e:"Allow two seconds between when the car ahead passes a point and when you reach that same point."},
-{c:"Following & Passing", q:"When passing another vehicle, the law requires you to pass at least how far to its left?", o:["1 foot","2 feet","5 feet","One full lane"], a:1, e:"At least two feet to the left — and don't return until you can see the vehicle behind you."},
-{c:"Following & Passing", q:"Passing is illegal on a curve or hill where you cannot see at least:", o:["200 feet ahead","300 feet ahead","500 feet ahead","1,000 feet ahead"], a:2, e:"If you can't see 500 feet ahead, do not pass."},
-{c:"Following & Passing", q:"When another driver is passing you, you should:", o:["Speed up to help them finish faster","Move to the right edge and never increase speed","Honk to warn them","Tap your brakes"], a:1, e:"You're required to help the pass: ease right and hold or reduce your speed — never speed up."},
-{c:"Following & Passing", q:"Passing on the right is allowed:", o:["Whenever the shoulder is paved","Anytime traffic is slow","On highways with at least two lanes in your direction","Never, under any circumstances"], a:2, e:"It's legal on multi-lane highways, one-way streets, and when passing a vehicle turning left."},
-{c:"Following & Passing", q:"Before changing lanes, you should check your mirrors and then:", o:["Honk twice","Look over your shoulder to check your blind spot","Flash your headlights","Slow down by 10 mph"], a:1, e:"Mirrors don't show everything — a quick shoulder check covers the blind spot."},
-{c:"Right of Way", q:"Two vehicles reach an uncontrolled intersection at the same time. Who has the right of way?", o:["The vehicle on the left","The vehicle on the right","The faster vehicle","The larger vehicle"], a:1, e:"When vehicles arrive together, the one on the right goes first."},
-{c:"Right of Way", q:"You're turning left and an oncoming car is going straight. You must:", o:["Turn quickly before they arrive","Yield and wait until the turn can be made safely","Honk and proceed","Wave them through"], a:1, e:"The driver going straight has the right of way — the left-turning driver waits."},
-{c:"Right of Way", q:"When exiting a private driveway, you must:", o:["Yield only to vehicles on your left","Stop and yield to all vehicles and pedestrians","Proceed if you signal first","Only stop if there's a stop sign"], a:1, e:"Stop and yield to everyone — vehicles and pedestrians — before entering the road."},
-{c:"Right of Way", q:"An emergency vehicle approaches with lights and siren. You should:", o:["Speed up and get out of the way","Stop exactly where you are","Pull to the right-hand curb or edge and stop completely","Pull to the left"], a:2, e:"Drive to the right edge of the road and stop until it has passed."},
-{c:"Right of Way", q:"An emergency vehicle is stopped on the roadside ahead with its lights flashing. On a multi-lane highway you must:", o:["Stop behind it","Move into a lane away from it, or slow down if you can't","Honk as you pass","Turn on your high beams"], a:1, e:"That's the Move Over law: change lanes away from it, or slow to a reduced, safe speed on a single-lane road."},
-{c:"Right of Way", q:"Trains have the right of way over:", o:["Cars only","All traffic except ambulances","All highway traffic, including police and fire vehicles","Trucks only"], a:2, e:"Trains yield to no one — not even emergency vehicles."},
-{c:"School Buses", q:"A school bus stops with flashing red lights on a two-lane road. Who must stop?", o:["Only traffic behind the bus","Only traffic facing the bus","All traffic from both directions","No one, if children aren't visible"], a:2, e:"On a two-lane road, everybody stops — both directions — until the bus moves again."},
-{c:"School Buses", q:"A school bus stops on a divided four-lane highway with a median. Who must stop?", o:["All traffic from both directions","Only traffic following the bus","Only oncoming traffic","Everyone within 500 feet"], a:1, e:"With a median separation, only traffic traveling behind the bus must stop."},
-{c:"Railroad Crossings", q:"When required to stop at a railroad crossing, you must stop within 50 feet but no closer than:", o:["5 feet","15 feet","25 feet","35 feet"], a:1, e:"Stop between 15 and 50 feet from the nearest rail."},
-{c:"Railroad Crossings", q:"You're crossing the tracks when the gates start coming down. You should:", o:["Stop immediately","Back up quickly","Keep moving — drive through the gate if needed","Honk and wait"], a:2, e:"KEEP MOVING. The gates are flexible and cannot trap you. Stopping or backing up is what's dangerous."},
-{c:"Railroad Crossings", q:"A train traveling 55 mph needs about how far to stop?", o:["500 feet","A quarter mile","Half a mile","More than a mile"], a:3, e:"More than a mile — which is why your car must always yield."},
-{c:"Railroad Crossings", q:"Your car stalls on the tracks. The FIRST thing to do is:", o:["Try restarting the engine","Push the car off","Get everyone out immediately and move away","Call a tow truck"], a:2, e:"Get out immediately, move away from the tracks, then use the blue Emergency Notification Sign to call the railroad."},
-{c:"Signals & Signs", q:"At a steady red light, you may turn right after stopping, unless:", o:["It's raining","A 'No Turn on Red' sign is posted","It's after dark","Another car is behind you"], a:1, e:"Right on red is legal after a complete stop — but you must yield to pedestrians and traffic, and obey any posted sign."},
-{c:"Signals & Signs", q:"A flashing red traffic signal means the same thing as:", o:["A yield sign","A stop sign","A warning sign","A school zone sign"], a:1, e:"Flashing red = stop sign. Flashing yellow = slow down and proceed with caution."},
-{c:"Signals & Signs", q:"A flashing yellow arrow means:", o:["Turns are not allowed","Turn permitted, but yield to oncoming traffic and pedestrians","Protected turn — go","The signal is broken"], a:1, e:"You may turn, but you must yield first. A solid green arrow is the protected turn."},
-{c:"Signals & Signs", q:"A traffic light is dark because of a power outage. Treat the intersection as:", o:["A yield sign for everyone","A four-way stop","A normal green light","Closed to traffic"], a:1, e:"Proceed as if there's a stop sign on all approaches, unless an officer is directing traffic."},
-{c:"Signals & Signs", q:"Which sign shape is used ONLY for stop signs?", o:["Triangle","Diamond","Octagon (eight sides)","Pentagon (five sides)"], a:2, e:"The octagon means stop, and nothing else. The pentagon marks school zones; the diamond warns."},
-{c:"Signals & Signs", q:"A pennant-shaped sign on the left side of the road marks:", o:["A school zone","The start of a no-passing zone","A railroad crossing","A rest area"], a:1, e:"The pennant points to where the no-passing zone (solid yellow line in your lane) begins."},
-{c:"Signals & Signs", q:"A five-sided (pentagon) sign warns of:", o:["A hospital","A school zone or crossing","Construction","Deer crossing"], a:1, e:"Pentagon = school. Slow down and watch for children."},
-{c:"Signals & Signs", q:"Odd-numbered highways (like I-95) generally run:", o:["East and west","North and south","In circles around cities","Downhill"], a:1, e:"Odd numbers run north–south; even numbers run east–west."},
-{c:"Pavement Markings", q:"Yellow lines on the pavement separate:", o:["Lanes moving in the same direction","Lanes moving in opposite directions","Bike lanes from car lanes","Parking from driving lanes"], a:1, e:"Yellow divides opposing traffic; white divides lanes going the same way."},
-{c:"Pavement Markings", q:"A center lane marked for two-way left turns may be used for:", o:["Passing slower cars","Making left turns only","Merging into traffic","Parking briefly"], a:1, e:"It's exclusively for left-turn movements — never for passing or merging."},
-{c:"Pavement Markings", q:"If you see RED reflective pavement markers facing you, it means:", o:["A school zone ahead","You are driving the wrong way","A fire hydrant is nearby","Road work ahead"], a:1, e:"Red markers warn of wrong-way movement. Blue markers mark fire hydrants."},
-{c:"Defensive Driving", q:"Good drivers scan the road ahead about how far?", o:["2–3 seconds","5 seconds","10–15 seconds (about a city block)","A quarter mile at all times"], a:2, e:"Look 10–15 seconds ahead and check mirrors about every 10 seconds."},
-{c:"Defensive Driving", q:"You must signal at least how far before turning when the speed limit is 45 mph or more?", o:["50 feet","100 feet","200 feet","500 feet"], a:2, e:"200 feet at 45+ mph; at least 100 feet at lower speeds."},
-{c:"Defensive Driving", q:"Headlights are required by law from sunset to sunrise and whenever visibility is less than:", o:["100 feet","200 feet","400 feet","1,000 feet"], a:2, e:"400 feet or less means lights on. Also: wipers on = headlights on."},
-{c:"Defensive Driving", q:"To avoid glare from oncoming headlights at night, you should look:", o:["Directly at their lights","Slightly to the right edge of the road","At your dashboard","In your rearview mirror"], a:1, e:"Glance slightly right and use the road edge as a guide."},
-{c:"Hazardous Conditions", q:"Hydroplaning can begin at speeds as low as:", o:["20 mph","30 mph","45 mph","60 mph"], a:1, e:"30 mph in barely 1/8 inch of water. If it happens: foot off the gas, don't brake, steer straight."},
-{c:"Hazardous Conditions", q:"When it's raining or the roads are wet, you should NEVER use:", o:["Headlights","Windshield wipers","Cruise control","Defrosters"], a:2, e:"Cruise control in the rain delays your reaction if you hydroplane. Turn it off."},
-{c:"Hazardous Conditions", q:"About how much fast-moving water can sweep a car off the road?", o:["2 inches","6 inches","18 inches","3 feet"], a:1, e:"Just 6 inches can sweep a car away; 12 inches can float it. Never drive through standing water."},
-{c:"Hazardous Conditions", q:"Your rear wheels start skidding to the left. You should steer:", o:["To the right","To the left, the direction of the skid","Straight and brake hard","Any direction while honking"], a:1, e:"Turn the wheel in the direction the rear is skidding, then straighten as the car recovers."},
-{c:"Hazardous Conditions", q:"With anti-lock brakes (ABS), the correct way to stop hard is:", o:["Pump the pedal rapidly","Press firmly with steady pressure","Tap it three times","Use the parking brake"], a:1, e:"Firm, steady pressure. Pumping ABS makes it less effective."},
-{c:"Hazardous Conditions", q:"Which spots on the road freeze FIRST as temperatures drop?", o:["Sunny straightaways","Bridges, overpasses, and shady spots","Intersections","Gravel roads"], a:1, e:"Bridges and overpasses freeze first because cold air surrounds them above and below."},
-{c:"Emergencies", q:"If a tire blows out, you should first:", o:["Brake hard immediately","Hold the wheel tightly and ease off the gas","Turn sharply toward the shoulder","Shift into reverse"], a:1, e:"Grip the wheel, keep straight, lift off the accelerator, and only brake once the car has slowed."},
-{c:"Emergencies", q:"You must report a crash to law enforcement when someone is injured or damage appears to be at least:", o:["$250","$500","$1,000","$2,500"], a:2, e:"Injury, death, or about $1,000+ in damage makes it a reportable crash."},
-{c:"Sharing the Road", q:"A trucker's 'No-Zones' extend up to 20 feet in front of the cab and how far behind the trailer?", o:["20 feet","50 feet","100 feet","200 feet"], a:3, e:"Up to 200 feet behind. Rule of thumb: if you can't see the driver in their side mirror, they can't see you."},
-{c:"Sharing the Road", q:"To pass a motorcycle, you must:", o:["Share their lane carefully","Change lanes, just as you would for a car","Honk first, then squeeze by","Pass on the right only"], a:1, e:"Motorcycles get the full width of their lane — pass exactly like you'd pass a car."},
-{c:"Sharing the Road", q:"As a pedestrian, you should walk:", o:["On the right side, with traffic","On the left side, facing traffic","In the middle of quiet roads","Wherever the shoulder is widest"], a:1, e:"Walk facing traffic so you can see what's coming, and wear or carry something white at night."},
-{c:"Sharing the Road", q:"Bicyclists on the road are legally considered:", o:["Pedestrians","Vehicles that must obey traffic laws","Obstacles to pass immediately","Sidewalk users only"], a:1, e:"Bikes are vehicles — riders must stop at signs and lights, and drivers must pass them with care."},
-{c:"Sharing the Road", q:"Deer are most active — and collisions most likely — at:", o:["Noon","Mid-morning","Dawn, dusk, and early night","Only in winter"], a:2, e:"Dawn, dusk, and the first hours after dark. If you see one deer, expect more behind it."},
-{c:"Your License", q:"To get a Level 1 Limited Learner Permit, you must be at least 15 and have completed a driver education course with:", o:["10 hours of classroom time","30 hours classroom + 6 hours behind the wheel","60 hours of practice driving","A parent's written test"], a:1, e:"30 classroom hours plus 6 behind-the-wheel hours, plus written, sign, and vision tests."},
-{c:"Your License", q:"During the first six months on a Level 1 permit, you may drive (with your supervisor) only between:", o:["6 a.m. and 6 p.m.","5 a.m. and 9 p.m.","7 a.m. and 10 p.m.","Any hours"], a:1, e:"5 a.m. to 9 p.m. for the first six months; after that, any time with a supervising driver."},
-{c:"Your License", q:"Your Level 1 driving log must show at least 60 hours of driving, including how many at night?", o:["5","10","20","30"], a:1, e:"At least 10 of the 60 logged hours must be nighttime driving."},
-{c:"Your License", q:"A supervising driver for a permit holder must have been licensed for at least:", o:["1 year","2 years","5 years","10 years"], a:2, e:"Five years — and they must be a parent, grandparent, guardian, or an approved responsible adult."},
-{c:"Your License", q:"On a Level 2 Limited Provisional License, how many non-household passengers under 21 may ride when you drive unsupervised?", o:["None","One","Two","Three"], a:1, e:"Just one passenger under 21 who isn't in your household (with a narrow exception for driving a student directly to or from school)."},
-{c:"Your License", q:"Drivers under 18 may use a cell phone while driving only to:", o:["Text a parent","Use GPS navigation","Call about an emergency (911, parents, etc.)","Answer any incoming call"], a:2, e:"Emergencies only — 911, hospitals, fire, law enforcement, or a parent/guardian. Everything else is illegal under 18."},
-{c:"Your License", q:"A new North Carolina resident must get an NC license within how many days of establishing residence?", o:["10 days","30 days","60 days","6 months"], a:2, e:"60 days for a regular license (30 days if transferring a commercial license)."},
-{c:"Safety Equipment", q:"A child under age 8 and weighing less than 80 pounds must be:", o:["In the front seat","Secured in a weight-appropriate child restraint","Held by an adult","Using a regular seat belt"], a:1, e:"Under 8 AND under 80 pounds means a proper child restraint system."},
-{c:"Safety Equipment", q:"Children age 12 and under should ride:", o:["In the front for supervision","Buckled up in the rear seat","In the bed of a pickup if supervised","Anywhere with a booster"], a:1, e:"The back seat is safest — air bags deploy at up to 200 mph and can seriously injure children up front."},
-{c:"Safety Equipment", q:"A rear-facing infant seat should NEVER be placed:", o:["In the back seat","In the middle seat","In the front seat with a passenger air bag","In an SUV"], a:2, e:"Never in front of an active passenger air bag — the deploying bag can be deadly to an infant."},
-{c:"Safety Equipment", q:"North Carolina law prohibits children under what age from riding in the open bed of a pickup truck?", o:["10","12","16","18"], a:2, e:"Under 16 is prohibited (with limited exceptions like an adult supervising in the bed, parades, or emergencies)."},
-{c:"Safety Equipment", q:"Tires are legally unsafe when tread depth is less than:", o:["1/32 inch","1/16 inch","1/8 inch","1/4 inch"], a:1, e:"Less than 1/16-inch tread (or visible cord, cracks, or separation) makes a tire illegal. Check pressure monthly."},
-{c:"Basic Skills", q:"When backing up, you should:", o:["Rely on your mirrors","Look over your right shoulder through the back window, going no faster than 10 mph","Open the door and watch the ground","Back quickly to finish sooner"], a:1, e:"Steer with your left hand, look over your right shoulder, and keep it under 10 mph."},
-{c:"Basic Skills", q:"You may not park within how many feet of a fire hydrant?", o:["5 feet","10 feet","15 feet","25 feet"], a:2, e:"Keep 15 feet clear of hydrants and fire station entrances; 25 feet from an intersecting street's curb line."},
-{c:"Basic Skills", q:"The best way to handle a curve is to:", o:["Brake hard in the middle of it","Slow down BEFORE the curve, then gradually accelerate through it","Speed up entering it","Coast in neutral"], a:1, e:"Slow before you enter, then feed in gentle speed for traction and control as you round it."},
-{c:"Basic Skills", q:"In a roundabout, who has the right of way?", o:["Vehicles entering","Vehicles already circulating in the roundabout","The vehicle on the left","Whoever honks first"], a:1, e:"Yield to traffic already in the circle, travel counterclockwise at 15–20 mph, and never change lanes inside."},
-{c:"Basic Skills", q:"If you miss your exit on the interstate, you should:", o:["Stop and back up carefully","Make a U-turn at the median","Continue to the next exit","Pull over and wait for help"], a:2, e:"Never stop, back up, or turn around on an interstate — just take the next exit."},
-{c:"Basic Skills", q:"When entering an interstate, use the acceleration lane to:", o:["Come to a complete stop","Match the speed of traffic before merging","Pass slower vehicles","Test your brakes"], a:1, e:"Build up to traffic speed in the acceleration lane, then merge smoothly."},
-{c:"Basic Skills", q:"Your right wheels drop off the pavement onto the shoulder. You should:", o:["Brake hard and steer back immediately","Ease off the gas, steer straight, and return when nearly stopped","Accelerate back onto the road","Turn on your hazards and keep driving"], a:1, e:"Don't jerk the wheel or brake hard — ease off, straighten, slow down, then gently steer back on."}
-];
+const BANK=[{"c":"Alcohol & the Law","q":"Your driving privilege is revoked immediately for at least 30 days if a chemical test shows a BAC of at least:","o":["0.05%","0.08%","0.10%"],"a":1,"e":"0.08% is the legal limit for regular drivers (0.04% in a commercial vehicle)."},{"c":"Alcohol & the Law","q":"If you refuse to take a required breath or blood test, your license is immediately revoked for at least 30 days, plus a DMV revocation of at least:","o":["3 months","6 months","12 months"],"a":2,"e":"Willful refusal means an immediate 30-day revocation plus a minimum 12-month DMV revocation."},{"c":"Alcohol & the Law","q":"A first DWI conviction brings a mandatory license revocation of:","o":["30 days","6 months","1 year"],"a":2,"e":"First conviction: one year. Second: four years. Repeat offenses can mean permanent revocation."},{"c":"Alcohol & the Law","q":"A driver under 21 convicted of driving with ANY amount of alcohol or drugs in their body loses their license for:","o":["30 days","90 days","1 year"],"a":2,"e":"North Carolina has zero tolerance for underage drivers — the revocation is one full year."},{"c":"Alcohol & the Law","q":"Which of these can actually sober up a person who has been drinking?","o":["Black coffee","A cold shower","Time"],"a":2,"e":"Only time removes alcohol from your system. Coffee, food, and showers don't work."},{"c":"Alcohol & the Law","q":"Alcohol is a depressant, which means it:","o":["Speeds up your reaction time","Slows brain functions and decision-making","Only affects your vision"],"a":1,"e":"It slows brain function, dulls judgment of speed and distance — and gives false confidence."},{"c":"Points & Penalties","q":"Your license may be suspended if you accumulate how many points within 3 years?","o":["6","8","12"],"a":2,"e":"12 points in three years can mean suspension. At 7 points you may be sent to a driver improvement clinic."},{"c":"Points & Penalties","q":"Passing a stopped school bus adds how many points to your record?","o":["2","3","5"],"a":2,"e":"It's 5 points — tied with aggressive driving for the most of any regular violation."},{"c":"Points & Penalties","q":"A first suspension under the point system takes your license for:","o":["30 days","60 days","6 months"],"a":1,"e":"First point-system suspension is 60 days, second is 6 months, third is 12 months."},{"c":"Points & Penalties","q":"Completing a driver improvement clinic deducts how many points from your record?","o":["1","2","3"],"a":2,"e":"Satisfactory completion of the clinic removes 3 points."},{"c":"Points & Penalties","q":"A provisional licensee (under 18) convicted of a SECOND moving violation within 12 months faces a suspension of:","o":["30 days","60 days","90 days"],"a":0,"e":"Second violation: 30 days. Third: 90 days. Fourth: six months."},{"c":"Points & Penalties","q":"Throwing litter from a vehicle carries a minimum fine of:","o":["$50","$100","$250"],"a":2,"e":"Littering from a vehicle: at least $250 for a first offense, and the driver is held responsible."},{"c":"Speed Limits","q":"Unless posted otherwise, the speed limit inside cities and towns is:","o":["25 mph","35 mph","45 mph"],"a":1,"e":"35 mph in cities and towns, 55 outside them, and 70 on interstates."},{"c":"Speed Limits","q":"The maximum speed limit for a school bus is:","o":["35 mph","45 mph","55 mph"],"a":1,"e":"School buses max out at 45 mph. School activity buses may go 55."},{"c":"Speed Limits","q":"Driving well BELOW the posted speed limit is:","o":["Always the safest choice","More likely to cause a crash than driving at normal speed","Only dangerous at night"],"a":1,"e":"Studies show a vehicle moving considerably below the posted limit is much more likely to cause or be involved in a crash."},{"c":"Speed Limits","q":"At 55 mph in ideal conditions, your vehicle needs about how much distance to come to a complete stop?","o":["55 feet","100 feet","211 feet"],"a":2,"e":"About 211 feet — reaction time plus braking distance adds up fast."},{"c":"Following & Passing","q":"The 'two-second rule' describes:","o":["How long to stop at a stop sign","Safe following distance behind the vehicle ahead","How long a yellow light lasts"],"a":1,"e":"Allow two seconds between when the car ahead passes a point and when you reach that same point."},{"c":"Following & Passing","q":"When passing another vehicle, the law requires you to pass at least how far to its left?","o":["1 foot","2 feet","5 feet"],"a":1,"e":"At least two feet to the left — and don't return until you can see the vehicle behind you."},{"c":"Following & Passing","q":"Passing is illegal on a curve or hill where you cannot see at least:","o":["200 feet ahead","300 feet ahead","500 feet ahead"],"a":2,"e":"If you can't see 500 feet ahead, do not pass."},{"c":"Following & Passing","q":"When another driver is passing you, you should:","o":["Speed up to help them finish faster","Move to the right edge and never increase speed","Honk to warn them"],"a":1,"e":"You're required to help the pass: ease right and hold or reduce your speed — never speed up."},{"c":"Following & Passing","q":"Passing on the right is allowed:","o":["Whenever the shoulder is paved","Anytime traffic is slow","On highways with at least two lanes in your direction"],"a":2,"e":"It's legal on multi-lane highways, one-way streets, and when passing a vehicle turning left."},{"c":"Following & Passing","q":"Before changing lanes, you should check your mirrors and then:","o":["Honk twice","Look over your shoulder to check your blind spot","Flash your headlights"],"a":1,"e":"Mirrors don't show everything — a quick shoulder check covers the blind spot."},{"c":"Right of Way","q":"Two vehicles reach an uncontrolled intersection at the same time. Who has the right of way?","o":["The vehicle on the left","The vehicle on the right","The faster vehicle"],"a":1,"e":"When vehicles arrive together, the one on the right goes first."},{"c":"Right of Way","q":"You're turning left and an oncoming car is going straight. You must:","o":["Turn quickly before they arrive","Yield and wait until the turn can be made safely","Honk and proceed"],"a":1,"e":"The driver going straight has the right of way — the left-turning driver waits."},{"c":"Right of Way","q":"When exiting a private driveway, you must:","o":["Yield only to vehicles on your left","Stop and yield to all vehicles and pedestrians","Proceed if you signal first"],"a":1,"e":"Stop and yield to everyone — vehicles and pedestrians — before entering the road."},{"c":"Right of Way","q":"An emergency vehicle approaches with lights and siren. You should:","o":["Speed up and get out of the way","Stop exactly where you are","Pull to the right-hand curb or edge and stop completely"],"a":2,"e":"Drive to the right edge of the road and stop until it has passed."},{"c":"Right of Way","q":"An emergency vehicle is stopped on the roadside ahead with its lights flashing. On a multi-lane highway you must:","o":["Stop behind it","Move into a lane away from it, or slow down if you can't","Honk as you pass"],"a":1,"e":"That's the Move Over law: change lanes away from it, or slow to a reduced, safe speed on a single-lane road."},{"c":"Right of Way","q":"Trains have the right of way over:","o":["Cars only","All traffic except ambulances","All highway traffic, including police and fire vehicles"],"a":2,"e":"Trains yield to no one — not even emergency vehicles."},{"c":"School Buses","q":"A school bus stops with flashing red lights on a two-lane road. Who must stop?","o":["Only traffic behind the bus","Only traffic facing the bus","All traffic from both directions"],"a":2,"e":"On a two-lane road, everybody stops — both directions — until the bus moves again."},{"c":"School Buses","q":"A school bus stops on a divided four-lane highway with a median. Who must stop?","o":["All traffic from both directions","Only traffic following the bus","Only oncoming traffic"],"a":1,"e":"With a median separation, only traffic traveling behind the bus must stop."},{"c":"Railroad Crossings","q":"When required to stop at a railroad crossing, you must stop within 50 feet but no closer than:","o":["5 feet","15 feet","25 feet"],"a":1,"e":"Stop between 15 and 50 feet from the nearest rail."},{"c":"Railroad Crossings","q":"You're crossing the tracks when the gates start coming down. You should:","o":["Stop immediately","Back up quickly","Keep moving — drive through the gate if needed"],"a":2,"e":"KEEP MOVING. The gates are flexible and cannot trap you. Stopping or backing up is what's dangerous."},{"c":"Railroad Crossings","q":"A train traveling 55 mph needs about how far to stop?","o":["500 feet","A quarter mile","More than a mile"],"a":2,"e":"More than a mile — which is why your car must always yield."},{"c":"Railroad Crossings","q":"Your car stalls on the tracks. The FIRST thing to do is:","o":["Try restarting the engine","Push the car off","Get everyone out immediately and move away"],"a":2,"e":"Get out immediately, move away from the tracks, then use the blue Emergency Notification Sign to call the railroad."},{"c":"Signals & Signs","q":"At a steady red light, you may turn right after stopping, unless:","o":["It's raining","A 'No Turn on Red' sign is posted","It's after dark"],"a":1,"e":"Right on red is legal after a complete stop — but you must yield to pedestrians and traffic, and obey any posted sign."},{"c":"Signals & Signs","q":"A flashing red traffic signal means the same thing as:","o":["A yield sign","A stop sign","A warning sign"],"a":1,"e":"Flashing red = stop sign. Flashing yellow = slow down and proceed with caution."},{"c":"Signals & Signs","q":"A flashing yellow arrow means:","o":["Turns are not allowed","Turn permitted, but yield to oncoming traffic and pedestrians","Protected turn — go"],"a":1,"e":"You may turn, but you must yield first. A solid green arrow is the protected turn."},{"c":"Signals & Signs","q":"A traffic light is dark because of a power outage. Treat the intersection as:","o":["A yield sign for everyone","A four-way stop","A normal green light"],"a":1,"e":"Proceed as if there's a stop sign on all approaches, unless an officer is directing traffic."},{"c":"Signals & Signs","q":"Which sign shape is used ONLY for stop signs?","o":["Triangle","Diamond","Octagon (eight sides)"],"a":2,"e":"The octagon means stop, and nothing else. The pentagon marks school zones; the diamond warns."},{"c":"Signals & Signs","q":"A pennant-shaped sign on the left side of the road marks:","o":["A school zone","The start of a no-passing zone","A railroad crossing"],"a":1,"e":"The pennant points to where the no-passing zone (solid yellow line in your lane) begins."},{"c":"Your License","q":"A driver license is required for which of the following?","o":["Steering a car while it is being pushed or towed","Sitting in a parked car with the engine off","Riding as a front-seat passenger"],"a":0,"e":"If you're steering it on a public road — even while it's towed or pushed — you need a license."},{"c":"Your License","q":"To get a revoked driver license restored, a person must:","o":["Simply wait for it to be mailed back","Go to a driver license office, pay a restoration fee, and reapply","Pass only a vision test"],"a":1,"e":"Visit a license office, prove identity, pay the restoration fee, reapply, and retake any required tests."},{"c":"Points & Penalties","q":"A driver can lose their license for a conviction of:","o":["Speeding over 75 mph","Driving 5 mph over the limit","An expired inspection sticker"],"a":0,"e":"A conviction for speeding over 75 mph can bring a suspension, as can 15+ over while above 55 mph."},{"c":"Alcohol & the Law","q":"About what percentage of all traffic fatalities involve alcohol?","o":["10%","38%","75%"],"a":1,"e":"About 38 percent — one of the biggest single factors in highway deaths."},{"c":"Alcohol & the Law","q":"Which statement is FALSE?","o":["A heavier person can eliminate alcohol faster than a lighter person","Only time removes alcohol from the body","Alcohol affects judgment even below 0.08%"],"a":0,"e":"Body size doesn't speed up elimination — the liver works at its own fixed pace no matter what."},{"c":"Alcohol & the Law","q":"A driver tests below 0.08%. Can we assume they can drive safely?","o":["Yes — under 0.08% is always legal and safe","No — even smaller amounts affect judgment","Yes, if they feel fine"],"a":1,"e":"Impairment starts well below 0.08%. Crash risk rises measurably at just 0.05%."},{"c":"Alcohol & the Law","q":"What happens if you drink alcohol and take medication at the same time?","o":["The medication cancels out the alcohol","They may combine with unpredictable results","Nothing, if the medication is prescribed"],"a":1,"e":"Mixing the two can multiply the effects unpredictably — a dangerous combination behind the wheel."},{"c":"Alcohol & the Law","q":"A doctor prescribes you medication, but you must drive. You should:","o":["Ask the doctor whether it's safe to drive","Drive anyway — it's prescribed","Take half the dose"],"a":0,"e":"Always ask how a medication affects driving before getting behind the wheel."},{"c":"Alcohol & the Law","q":"Can you be prosecuted for driving under the influence of a PRESCRIBED medication?","o":["No — a prescription makes it legal","Yes — the law requires you to be in full control when you drive","Only if you also drank alcohol"],"a":1,"e":"Impaired is impaired. A prescription is not a defense to DWI."},{"c":"Alcohol & the Law","q":"One effect of alcohol on a driver's eyes is that they tend to:","o":["Water constantly","Stare at a single point","See better in the dark"],"a":1,"e":"Alcohol makes the eyes fixate instead of scanning — so drivers miss hazards around them."},{"c":"Alcohol & the Law","q":"A can of beer, a glass of wine, and a shot of liquor contain:","o":["About the same amount of alcohol","Very different amounts — beer is weakest","More alcohol in the wine"],"a":0,"e":"Standard servings all deliver roughly the same alcohol. 'It was only beer' doesn't hold up."},{"c":"Alcohol & the Law","q":"What is the effect of eating before drinking alcohol?","o":["Food neutralizes the alcohol","Alcohol enters the bloodstream at a slower pace","Food makes alcohol stronger"],"a":1,"e":"Food slows absorption — but it doesn't reduce the total alcohol or make you safe to drive."},{"c":"Alcohol & the Law","q":"Alcohol tends to concentrate most in:","o":["The muscles","The brain","The skin"],"a":1,"e":"It concentrates in the brain — which is exactly why judgment, vision, and reaction time suffer."},{"c":"Alcohol & the Law","q":"If you're convicted of DWI while your license is already revoked for an earlier DWI:","o":["You get a written warning","The court may order your vehicle seized and sold","Nothing extra happens"],"a":1,"e":"Drive impaired during a DWI revocation and you can lose the car itself."},{"c":"Alcohol & the Law","q":"A second DWI conviction (prior offense within 3 years) means a mandatory revocation of:","o":["1 year","4 years","90 days"],"a":1,"e":"Four years for the second conviction. A third can be permanent."},{"c":"Alcohol & the Law","q":"A fourth DWI conviction brings:","o":["A 2-year revocation","Mandatory permanent revocation — a felony if the 3 priors were within 7 years","A $500 fine only"],"a":1,"e":"Four strikes: permanent revocation, and felony habitual DWI if the priors fall within seven years."},{"c":"Sharing the Road","q":"Which statement about pedestrian deaths is correct?","o":["In cities, 2 of every 5 people killed in crashes are pedestrians","Pedestrians are rarely killed in cities","Most pedestrians killed are middle-aged joggers"],"a":0,"e":"Two of five crash deaths in cities are pedestrians — most are children, elderly people, or people who've been drinking."},{"c":"Sharing the Road","q":"A pedestrian is crossing your path at an intersection with no lights or signs. Who has the right of way?","o":["The pedestrian","Your vehicle","Whoever arrived first"],"a":0,"e":"Pedestrians have the right of way in marked or unmarked crosswalks at uncontrolled intersections."},{"c":"Sharing the Road","q":"When walking along a road at night, you should:","o":["Wear or carry something white","Wear dark clothes to avoid distracting drivers","Walk close to the travel lane"],"a":0,"e":"Wear or carry something white (a flashlight is even better) — and never assume drivers can see you."},{"c":"Sharing the Road","q":"The law gives a blind pedestrian special consideration at unsignaled intersections when they:","o":["Wave at traffic","Extend a white cane or have a guide dog","Cross in a group"],"a":1,"e":"A white cane (or white with red tip) or a guide dog means all drivers must take special care to yield."},{"c":"Sharing the Road","q":"Which statement about bicycle riders is correct?","o":["They're likely to be seriously injured in any collision with a car","They're well protected in a crash","They must ride against traffic"],"a":0,"e":"A bike offers almost no protection — which is why drivers must pass with abundant clearance."},{"c":"Defensive Driving","q":"A safe driver:","o":["Frequently checks the rear-view and side mirrors","Watches only the car directly ahead","Keeps eyes fixed on the speedometer"],"a":0,"e":"Check your mirrors about every 10 seconds so you always know what's around you."},{"c":"Defensive Driving","q":"To help avoid being hit from behind, you should:","o":["Check your rear-view mirror often","Tap your brakes randomly","Drive well below the speed limit"],"a":0,"e":"Knowing what's behind you lets you signal early, brake smoothly, and avoid rear-end crashes."},{"c":"Defensive Driving","q":"On a long trip, you should:","o":["Avoid staring at any one thing for more than a few seconds","Fix your eyes on the center line","Watch the car ahead only"],"a":0,"e":"Keep your eyes moving — scanning beats staring, which leads to highway hypnosis."},{"c":"Defensive Driving","q":"If you become tired while driving on a long trip, the best fix is to:","o":["Stop and take a short 15–45 minute nap","Turn up the radio and push through","Drive faster to finish sooner"],"a":0,"e":"Stop and nap; caffeine helps temporarily. Get out and walk at least every 2 hours."},{"c":"Defensive Driving","q":"At night, a driver may be temporarily blinded by:","o":["Glare from oncoming headlights","Their own taillights","Streetlights overhead"],"a":0,"e":"Oncoming glare is the classic hazard — look slightly right toward the road edge until it passes."},{"c":"Defensive Driving","q":"You should use LOW-beam headlights:","o":["At night in the city and in fog or mist","Only when parked","On empty open highways"],"a":0,"e":"Low beams in town, in fog, in rain, in snow — high beams reflect back and blind you in bad weather."},{"c":"Defensive Driving","q":"Never use your high beams when you are:","o":["Following another vehicle","On a dark rural road alone","Driving below 30 mph"],"a":0,"e":"High beams blast the mirrors of the car ahead. Dim when following or meeting other vehicles."},{"c":"Speed Limits","q":"Very slow driving is especially dangerous:","o":["Just after the crest of a hill or around a curve","On wide, straight roads","In parking lots"],"a":0,"e":"Faster traffic coming over a hill or around a curve can't see you in time to slow down."},{"c":"Basic Skills","q":"When rounding a curve, a car naturally tends to:","o":["Move toward the outside of the curve","Hug the inside of the curve","Slow itself down"],"a":0,"e":"Momentum pushes you outward — which is why you slow down BEFORE entering the curve."},{"c":"Basic Skills","q":"To reduce speed going down a long, steep hill, you should:","o":["Shift to a lower gear","Ride the brakes the whole way","Shift to neutral and coast"],"a":0,"e":"Let a lower gear hold you back. Riding the brakes overheats them until they fade — or fail."},{"c":"Basic Skills","q":"As you approach a right turn, you should signal and:","o":["Stay close to the right edge and reduce speed","Swing wide to the left first","Speed up through the turn"],"a":0,"e":"Hug the right edge so nothing can slip between you and the curb, slow down, then turn."},{"c":"Basic Skills","q":"If you're in the wrong lane to make a left turn at an intersection:","o":["Continue to the next intersection and turn there","Cut across quickly","Stop and wait for a gap"],"a":0,"e":"Never force it — go to the next intersection and come back around."},{"c":"Basic Skills","q":"At an unmarked intersection where trees or buildings block your view:","o":["Stop, then move forward slowly and cautiously","Honk and proceed at normal speed","Speed through to clear it quickly"],"a":0,"e":"Stop first, then creep forward until you can see that it's safe."},{"c":"Following & Passing","q":"To pass a car ahead on a two-lane road, you should:","o":["Signal your intention and sound your horn","Flash your lights and go","Pass quietly without warning"],"a":0,"e":"Signal so drivers ahead and behind can plan — the horn legally obligates the driver ahead to help you pass."},{"c":"Right of Way","q":"Crashes occur most frequently:","o":["At intersections","On straight open highways","In driveways"],"a":0,"e":"Intersections are the most dangerous places on the road — more than a third of fatal crashes happen there."},{"c":"Right of Way","q":"Three cars reach an uncontrolled intersection at the same time. Car A is to the right of Car B, and Car C is to the left of Car B. Who goes first?","o":["Car A, then Car B, then Car C","Car C, then Car B, then Car A","Car B, then Car A, then Car C"],"a":0,"e":"Right of way flows from the right: A goes, then B, then C."},{"c":"Right of Way","q":"Car 1 is going straight; Car 2, facing it, wants to turn left. A pedestrian is crossing on Car 1's side. Right of way belongs to:","o":["The driver of Car 1 and the pedestrian","Car 2 — turning traffic goes first","Whoever moves first"],"a":0,"e":"Straight-through traffic beats a left turn, and the pedestrian in the crosswalk beats everyone."},{"c":"City Driving","q":"When driving on a city street, watch out for:","o":["Parked cars pulling out and pedestrians darting between them","Only the traffic lights","Just the car ahead"],"a":0,"e":"Parked cars hide pedestrians and can pull out suddenly — city driving means scanning everything."},{"c":"City Driving","q":"When driving in heavy traffic, you should:","o":["Watch for drivers who make quick stops","Follow closely to save space","Change lanes constantly"],"a":0,"e":"Quick stops are the rhythm of heavy traffic — check your mirrors often and leave reaction room."},{"c":"Interstates","q":"The most frequent type of crash on an interstate highway is:","o":["A rear-end collision","A head-on collision","A rollover"],"a":0,"e":"Rear-enders — caused by tailgating at speed. Use the two-second rule."},{"c":"Interstates","q":"On a long interstate trip, you should plan to:","o":["Stop at a rest area about every 100 miles","Drive straight through","Stop only for gas"],"a":0,"e":"Stop at least every 100 miles to stretch and stay alert."},{"c":"Interstates","q":"A breakdown forces you onto the interstate shoulder. You should:","o":["Raise the hood and tie a white cloth to the left door handle","Stand behind the car and wave","Walk down the travel lane for help"],"a":0,"e":"Hood up, white cloth on the door handle or antenna — the universal 'send help' signal. Stay off the road."},{"c":"Hazardous Conditions","q":"If it starts to drizzle while you're driving:","o":["Slow down and allow at least twice the normal following distance","Speed up to get out of the rain","Turn on high beams"],"a":0,"e":"Fresh rain loosens oil on the road. Slow down and double your following distance."},{"c":"Hazardous Conditions","q":"Roads are especially slick:","o":["Just after rain or drizzle begins","After several hours of steady rain","Only when flooded"],"a":0,"e":"The first 10–15 minutes are the worst — rain mixes with oil and dust into a slippery film."},{"c":"Hazardous Conditions","q":"When driving through heavy fog, you should:","o":["Slow down and use low beams","Use high beams to see farther","Follow the car ahead closely"],"a":0,"e":"Slow down, low beams on, and watch for taillights ahead. If you can't see, pull far off and stop."},{"c":"Hazardous Conditions","q":"In a heavy daytime snowstorm, use:","o":["Low-beam headlights","High-beam headlights","Parking lights only"],"a":0,"e":"Low beams — high beams bounce off falling snow and blind you."},{"c":"Hazardous Conditions","q":"The best way to get traction on hard-packed snow is to:","o":["Put chains on your tires","Let air out of your tires","Drive in neutral"],"a":0,"e":"Chains grip best on packed snow — though even chains can slide on ice."},{"c":"Hazardous Conditions","q":"Pulling away on a slippery surface with a manual transmission, you should:","o":["Start in second or a higher gear","Start in first and rev hard","Ride the clutch in first"],"a":0,"e":"A higher gear delivers gentler power to the wheels, so they're less likely to spin."},{"c":"Hazardous Conditions","q":"Skids are most likely to occur on:","o":["A road with hard-packed snow","A warm dry road","Fresh asphalt in summer"],"a":0,"e":"Packed snow and ice are prime skid territory — slow to a crawl and leave triple the stopping room."},{"c":"Hazardous Conditions","q":"Stopping on an icy road WITHOUT anti-lock brakes, you should:","o":["Pump the brake pedal lightly","Slam the brakes hard","Use the parking brake"],"a":0,"e":"No ABS? Pump gently. With ABS, do the opposite: firm, steady pressure."},{"c":"Emergencies","q":"When pulling a trailer down a long, steep hill:","o":["Drive in a low gear and keep to the right lane","Use neutral to save fuel","Stay in the left lane"],"a":0,"e":"Low gear controls your speed; the right lane keeps faster traffic clear."},{"c":"Emergencies","q":"If your brakes fail, you should:","o":["Shift into a lower gear and apply the emergency brake","Turn off the engine immediately","Open the door and drag your foot"],"a":0,"e":"Downshift and ease on the emergency brake — it may damage them, but there's no better option."},{"c":"Emergencies","q":"Wet brakes can be dried out by:","o":["Driving slowly while keeping light pressure on the brake pedal","Pulling over and waiting an hour","Pumping the gas pedal"],"a":0,"e":"Gentle brake pressure while moving creates friction heat that evaporates the water."},{"c":"Emergencies","q":"When changing a flat tire, you should:","o":["Block the wheels so the car can't roll","Leave the engine running","Have passengers stay inside"],"a":0,"e":"Block the wheels, set the parking brake, get everyone out on the passenger side, away from the road."},{"c":"Emergencies","q":"Your car breaks down on the highway at night. You should:","o":["Get completely off the road and turn on parking lights or flashers","Stop in the travel lane with lights off","Leave the high beams on facing traffic"],"a":0,"e":"All the way off the road, lights or flashers on, white cloth up — and everyone away from the vehicle."},{"c":"Emergencies","q":"A driver involved in a crash should:","o":["Report it to law enforcement and notify their insurance company","Leave if the damage looks minor","Only exchange phone numbers"],"a":0,"e":"Stop, help the injured, report it immediately, exchange info, and tell your insurer."},{"c":"Signals & Signs","q":"A diamond-shaped sign warns drivers of:","o":["Hazards ahead, like a deer crossing","Speed limits","Hospital services"],"a":0,"e":"Diamond = warning. Yellow for general hazards, orange for work zones."},{"c":"Signals & Signs","q":"When can you disregard a police officer directing traffic?","o":["Never — the officer's signals override lights and signs","When the light is green","When you're turning right"],"a":0,"e":"An officer's hand signals beat every signal and sign on the road."},{"c":"Signals & Signs","q":"The main color of signs in highway work zones is:","o":["Orange","Blue","Green"],"a":0,"e":"Black-on-orange means construction or maintenance ahead — stay alert and obey posted work-zone limits."},{"c":"School Buses","q":"A school bus stops on a five-lane street (two lanes each way plus a center turn lane). Who must stop?","o":["Only traffic traveling in the same direction as the bus","All traffic in both directions","No one"],"a":0,"e":"With four or more lanes and a center turn lane, only traffic following the bus must stop."},{"c":"Vehicle Equipment","q":"North Carolina requires all cars to have:","o":["A white light making the license plate visible for 50 feet","Tinted windows","Mud flaps"],"a":0,"e":"A license plate light is required equipment, along with brakes, horn, muffler, and safe tires."},{"c":"Vehicle Equipment","q":"Your brakes need checking if:","o":["They squeak when you press the pedal","The pedal feels firm","The car stops evenly"],"a":0,"e":"Squeaking, a sinking pedal, or a pedal less than a third off the floor all mean: get them checked now."},{"c":"Vehicle Equipment","q":"Which is correct about horns and sirens?","o":["Every vehicle must have a horn, but only emergency vehicles may have sirens","Any car may install a siren","Horns are optional equipment"],"a":0,"e":"A working horn (audible 200 feet) is required; sirens are for law enforcement and emergency vehicles only."},{"c":"Vehicle Equipment","q":"Every motor vehicle must be equipped with:","o":["A muffler in good working order","A roof rack","Fog lights"],"a":0,"e":"The muffler filters noise and smoke — and it's required by law."},{"c":"Vehicle Equipment","q":"The system that carries harmful fumes from the engine to the rear of the car is:","o":["The exhaust system","The cooling system","The fuel system"],"a":0,"e":"The exhaust system — keep it leak-free so fumes exit behind the car, not inside it."},{"c":"Vehicle Equipment","q":"A leaky exhaust system should be repaired because it:","o":["May allow deadly carbon monoxide into the car","Wastes gasoline","Voids your registration"],"a":0,"e":"Carbon monoxide is invisible, odorless, and can knock you unconscious. Keep a window cracked and fix leaks fast."},{"c":"Vehicle Equipment","q":"A car that pitches, tosses, and leans heavily in turns likely has trouble with its:","o":["Suspension system","Exhaust system","Ignition system"],"a":0,"e":"Swaying and leaning point to worn suspension or shocks — a faulty suspension can cost you control."},{"c":"Signals & Signs","q":"A five-sided (pentagon) sign warns of:","o":["A hospital","A school zone or crossing","Construction"],"a":1,"e":"Pentagon = school. Slow down and watch for children."},{"c":"Signals & Signs","q":"Odd-numbered highways (like I-95) generally run:","o":["East and west","North and south","In circles around cities"],"a":1,"e":"Odd numbers run north–south; even numbers run east–west."},{"c":"Pavement Markings","q":"Yellow lines on the pavement separate:","o":["Lanes moving in the same direction","Lanes moving in opposite directions","Bike lanes from car lanes"],"a":1,"e":"Yellow divides opposing traffic; white divides lanes going the same way."},{"c":"Pavement Markings","q":"A center lane marked for two-way left turns may be used for:","o":["Passing slower cars","Making left turns only","Merging into traffic"],"a":1,"e":"It's exclusively for left-turn movements — never for passing or merging."},{"c":"Pavement Markings","q":"If you see RED reflective pavement markers facing you, it means:","o":["A school zone ahead","You are driving the wrong way","A fire hydrant is nearby"],"a":1,"e":"Red markers warn of wrong-way movement. Blue markers mark fire hydrants."},{"c":"Defensive Driving","q":"Good drivers scan the road ahead about how far?","o":["2–3 seconds","5 seconds","10–15 seconds (about a city block)"],"a":2,"e":"Look 10–15 seconds ahead and check mirrors about every 10 seconds."},{"c":"Defensive Driving","q":"You must signal at least how far before turning when the speed limit is 45 mph or more?","o":["50 feet","100 feet","200 feet"],"a":2,"e":"200 feet at 45+ mph; at least 100 feet at lower speeds."},{"c":"Defensive Driving","q":"Headlights are required by law from sunset to sunrise and whenever visibility is less than:","o":["100 feet","200 feet","400 feet"],"a":2,"e":"400 feet or less means lights on. Also: wipers on = headlights on."},{"c":"Defensive Driving","q":"To avoid glare from oncoming headlights at night, you should look:","o":["Directly at their lights","Slightly to the right edge of the road","At your dashboard"],"a":1,"e":"Glance slightly right and use the road edge as a guide."},{"c":"Hazardous Conditions","q":"Hydroplaning can begin at speeds as low as:","o":["20 mph","30 mph","45 mph"],"a":1,"e":"30 mph in barely 1/8 inch of water. If it happens: foot off the gas, don't brake, steer straight."},{"c":"Hazardous Conditions","q":"When it's raining or the roads are wet, you should NEVER use:","o":["Headlights","Windshield wipers","Cruise control"],"a":2,"e":"Cruise control in the rain delays your reaction if you hydroplane. Turn it off."},{"c":"Hazardous Conditions","q":"About how much fast-moving water can sweep a car off the road?","o":["2 inches","6 inches","18 inches"],"a":1,"e":"Just 6 inches can sweep a car away; 12 inches can float it. Never drive through standing water."},{"c":"Hazardous Conditions","q":"Your rear wheels start skidding to the left. You should steer:","o":["To the right","To the left, the direction of the skid","Straight and brake hard"],"a":1,"e":"Turn the wheel in the direction the rear is skidding, then straighten as the car recovers."},{"c":"Hazardous Conditions","q":"With anti-lock brakes (ABS), the correct way to stop hard is:","o":["Pump the pedal rapidly","Press firmly with steady pressure","Tap it three times"],"a":1,"e":"Firm, steady pressure. Pumping ABS makes it less effective."},{"c":"Hazardous Conditions","q":"Which spots on the road freeze FIRST as temperatures drop?","o":["Sunny straightaways","Bridges, overpasses, and shady spots","Intersections"],"a":1,"e":"Bridges and overpasses freeze first because cold air surrounds them above and below."},{"c":"Emergencies","q":"If a tire blows out, you should first:","o":["Brake hard immediately","Hold the wheel tightly and ease off the gas","Turn sharply toward the shoulder"],"a":1,"e":"Grip the wheel, keep straight, lift off the accelerator, and only brake once the car has slowed."},{"c":"Emergencies","q":"You must report a crash to law enforcement when someone is injured or damage appears to be at least:","o":["$250","$500","$1,000"],"a":2,"e":"Injury, death, or about $1,000+ in damage makes it a reportable crash."},{"c":"Sharing the Road","q":"A trucker's 'No-Zones' extend up to 20 feet in front of the cab and how far behind the trailer?","o":["20 feet","50 feet","200 feet"],"a":2,"e":"Up to 200 feet behind. Rule of thumb: if you can't see the driver in their side mirror, they can't see you."},{"c":"Sharing the Road","q":"To pass a motorcycle, you must:","o":["Share their lane carefully","Change lanes, just as you would for a car","Honk first, then squeeze by"],"a":1,"e":"Motorcycles get the full width of their lane — pass exactly like you'd pass a car."},{"c":"Sharing the Road","q":"As a pedestrian, you should walk:","o":["On the right side, with traffic","On the left side, facing traffic","In the middle of quiet roads"],"a":1,"e":"Walk facing traffic so you can see what's coming, and wear or carry something white at night."},{"c":"Sharing the Road","q":"Bicyclists on the road are legally considered:","o":["Pedestrians","Vehicles that must obey traffic laws","Obstacles to pass immediately"],"a":1,"e":"Bikes are vehicles — riders must stop at signs and lights, and drivers must pass them with care."},{"c":"Sharing the Road","q":"Deer are most active — and collisions most likely — at:","o":["Noon","Mid-morning","Dawn, dusk, and early night"],"a":2,"e":"Dawn, dusk, and the first hours after dark. If you see one deer, expect more behind it."},{"c":"Your License","q":"To get a Level 1 Limited Learner Permit, you must be at least 15 and have completed a driver education course with:","o":["10 hours of classroom time","30 hours classroom + 6 hours behind the wheel","60 hours of practice driving"],"a":1,"e":"30 classroom hours plus 6 behind-the-wheel hours, plus written, sign, and vision tests."},{"c":"Your License","q":"During the first six months on a Level 1 permit, you may drive (with your supervisor) only between:","o":["6 a.m. and 6 p.m.","5 a.m. and 9 p.m.","7 a.m. and 10 p.m."],"a":1,"e":"5 a.m. to 9 p.m. for the first six months; after that, any time with a supervising driver."},{"c":"Your License","q":"Your Level 1 driving log must show at least 60 hours of driving, including how many at night?","o":["5","10","20"],"a":1,"e":"At least 10 of the 60 logged hours must be nighttime driving."},{"c":"Your License","q":"A supervising driver for a permit holder must have been licensed for at least:","o":["1 year","2 years","5 years"],"a":2,"e":"Five years — and they must be a parent, grandparent, guardian, or an approved responsible adult."},{"c":"Your License","q":"On a Level 2 Limited Provisional License, how many non-household passengers under 21 may ride when you drive unsupervised?","o":["None","One","Two"],"a":1,"e":"Just one passenger under 21 who isn't in your household (with a narrow exception for driving a student directly to or from school)."},{"c":"Your License","q":"Drivers under 18 may use a cell phone while driving only to:","o":["Text a parent","Use GPS navigation","Call about an emergency (911, parents, etc.)"],"a":2,"e":"Emergencies only — 911, hospitals, fire, law enforcement, or a parent/guardian. Everything else is illegal under 18."},{"c":"Your License","q":"A new North Carolina resident must get an NC license within how many days of establishing residence?","o":["10 days","30 days","60 days"],"a":2,"e":"60 days for a regular license (30 days if transferring a commercial license)."},{"c":"Safety Equipment","q":"A child under age 8 and weighing less than 80 pounds must be:","o":["In the front seat","Secured in a weight-appropriate child restraint","Held by an adult"],"a":1,"e":"Under 8 AND under 80 pounds means a proper child restraint system."},{"c":"Safety Equipment","q":"Children age 12 and under should ride:","o":["In the front for supervision","Buckled up in the rear seat","In the bed of a pickup if supervised"],"a":1,"e":"The back seat is safest — air bags deploy at up to 200 mph and can seriously injure children up front."},{"c":"Safety Equipment","q":"A rear-facing infant seat should NEVER be placed:","o":["In the back seat","In the middle seat","In the front seat with a passenger air bag"],"a":2,"e":"Never in front of an active passenger air bag — the deploying bag can be deadly to an infant."},{"c":"Safety Equipment","q":"North Carolina law prohibits children under what age from riding in the open bed of a pickup truck?","o":["10","12","16"],"a":2,"e":"Under 16 is prohibited (with limited exceptions like an adult supervising in the bed, parades, or emergencies)."},{"c":"Safety Equipment","q":"Tires are legally unsafe when tread depth is less than:","o":["1/32 inch","1/16 inch","1/8 inch"],"a":1,"e":"Less than 1/16-inch tread (or visible cord, cracks, or separation) makes a tire illegal. Check pressure monthly."},{"c":"Basic Skills","q":"When backing up, you should:","o":["Rely on your mirrors","Look over your right shoulder through the back window, going no faster than 10 mph","Open the door and watch the ground"],"a":1,"e":"Steer with your left hand, look over your right shoulder, and keep it under 10 mph."},{"c":"Basic Skills","q":"You may not park within how many feet of a fire hydrant?","o":["5 feet","10 feet","15 feet"],"a":2,"e":"Keep 15 feet clear of hydrants and fire station entrances; 25 feet from an intersecting street's curb line."},{"c":"Basic Skills","q":"The best way to handle a curve is to:","o":["Brake hard in the middle of it","Slow down BEFORE the curve, then gradually accelerate through it","Speed up entering it"],"a":1,"e":"Slow before you enter, then feed in gentle speed for traction and control as you round it."},{"c":"Basic Skills","q":"In a roundabout, who has the right of way?","o":["Vehicles entering","Vehicles already circulating in the roundabout","The vehicle on the left"],"a":1,"e":"Yield to traffic already in the circle, travel counterclockwise at 15–20 mph, and never change lanes inside."},{"c":"Basic Skills","q":"If you miss your exit on the interstate, you should:","o":["Stop and back up carefully","Make a U-turn at the median","Continue to the next exit"],"a":2,"e":"Never stop, back up, or turn around on an interstate — just take the next exit."},{"c":"Basic Skills","q":"When entering an interstate, use the acceleration lane to:","o":["Come to a complete stop","Match the speed of traffic before merging","Pass slower vehicles"],"a":1,"e":"Build up to traffic speed in the acceleration lane, then merge smoothly."},{"c":"Basic Skills","q":"Your right wheels drop off the pavement onto the shoulder. You should:","o":["Brake hard and steer back immediately","Ease off the gas, steer straight, and return when nearly stopped","Accelerate back onto the road"],"a":1,"e":"Don't jerk the wheel or brake hard — ease off, straighten, slow down, then gently steer back on."}];
 </script>
 <script>
-/* =====================================================================
-   GAME ENGINE
-   ===================================================================== */
-const $ = id => document.getElementById(id);
-const screens = {home:$("screen-home"), quiz:$("screen-quiz"), results:$("screen-results")};
-function show(name){
+/* ============================ ENGINE ============================ */
+const $=id=>document.getElementById(id);
+const screens={home:$("screen-home"),quiz:$("screen-quiz"),results:$("screen-results")};
+function show(n){
   Object.values(screens).forEach(s=>s.classList.remove("active"));
-  screens[name].classList.add("active");
+  screens[n].classList.add("active");
+  document.body.classList.toggle("quiz-mode", n==="quiz");
   window.scrollTo(0,0);
 }
 
-/* ---------- session state (in-memory only) ---------- */
-const session = {
-  xp:0, bestStreak:0,
-  wrongIds:new Set(), unsureIds:new Set(),   // feeds Trouble Spots
-};
-function reviewPool(){ return [...new Set([...session.wrongIds, ...session.unsureIds])]; }
+/* session (in-memory) */
+const session={xp:0,bestStreak:0,wrongIds:new Set(),unsureIds:new Set()};
+const reviewPool=()=>[...new Set([...session.wrongIds,...session.unsureIds])];
 function refreshHome(){
-  $("chipXp").textContent = session.xp;
-  $("chipBest").textContent = session.bestStreak;
-  $("chipReview").textContent = reviewPool().length;
-  $("reviewCount").textContent = reviewPool().length;
-  $("bankCount").textContent = BANK.length;
-  $("mode3").classList.toggle("locked", reviewPool().length===0);
+  $("sbXp").textContent=session.xp;
+  $("sbStreak").textContent=session.bestStreak;
+  const n=reviewPool().length;
+  $("sbReview").textContent=n;
+  $("node3Sub").textContent=n?`${n} to review`:"nothing yet — go play!";
+  $("node3Icon").textContent=n?"🎯":"🔒";
+  $("mode3").classList.toggle("locked",n===0);
+  $("marathonSub").textContent=`all ${BANK.length} questions`;
+  $("tabDot").style.display=n?"":"none";
+  $("tabDot").textContent=n;
 }
 
-/* ---------- sound ---------- */
-let soundOn = true, actx = null;
-$("soundToggle").onclick = ()=>{ soundOn=!soundOn; $("soundToggle").textContent = soundOn?"🔊":"🔇"; };
-function beep(freqs, dur=0.09, type="sine", vol=0.12){
-  if(!soundOn) return;
+/* sound */
+let soundOn=true,actx=null;
+$("soundToggle").onclick=()=>{soundOn=!soundOn;$("soundToggle").textContent=soundOn?"🔊":"🔇";};
+function beep(freqs,dur=0.09,type="sine",vol=0.12){
+  if(!soundOn)return;
   try{
-    actx = actx || new (window.AudioContext||window.webkitAudioContext)();
+    actx=actx||new (window.AudioContext||window.webkitAudioContext)();
     freqs.forEach((f,i)=>{
-      const o=actx.createOscillator(), g=actx.createGain();
-      o.type=type; o.frequency.value=f;
-      g.gain.setValueAtTime(vol, actx.currentTime + i*dur);
-      g.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + i*dur + dur);
-      o.connect(g); g.connect(actx.destination);
-      o.start(actx.currentTime + i*dur); o.stop(actx.currentTime + i*dur + dur);
+      const o=actx.createOscillator(),g=actx.createGain();
+      o.type=type;o.frequency.value=f;
+      g.gain.setValueAtTime(vol,actx.currentTime+i*dur);
+      g.gain.exponentialRampToValueAtTime(0.001,actx.currentTime+i*dur+dur);
+      o.connect(g);g.connect(actx.destination);
+      o.start(actx.currentTime+i*dur);o.stop(actx.currentTime+i*dur+dur);
     });
   }catch(e){}
 }
-const sfx = {
+const sfx={
   correct:()=>beep([660,880],0.1,"sine",0.14),
   wrong:()=>beep([220,180],0.14,"square",0.07),
   skip:()=>beep([440],0.07,"sine",0.08),
   win:()=>beep([523,659,784,1046],0.12,"sine",0.14),
   lose:()=>beep([330,262,220],0.16,"sine",0.1),
+  select:()=>beep([500],0.05,"sine",0.07),
 };
 
-/* ---------- confetti ---------- */
-const canvas=$("confetti"), ctx=canvas.getContext("2d");
-let pieces=[], confettiRunning=false;
-function sizeCanvas(){ canvas.width=innerWidth; canvas.height=innerHeight; }
-addEventListener("resize", sizeCanvas); sizeCanvas();
-const CONF_COLORS=["#58cc02","#1cb0f6","#ffc800","#ff4b4b","#ce82ff","#ff9600"];
+/* confetti */
+const canvas=$("confetti"),ctx=canvas.getContext("2d");
+let pieces=[],confettiRunning=false;
+function sizeCanvas(){canvas.width=innerWidth;canvas.height=innerHeight;}
+addEventListener("resize",sizeCanvas);sizeCanvas();
+const CC=["#58cc02","#1cb0f6","#ffc800","#ff4b4b","#ce82ff","#ff9600"];
 function confetti(n=90){
-  if(matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  for(let i=0;i<n;i++){
-    pieces.push({x:Math.random()*canvas.width, y:-20-Math.random()*canvas.height*0.4,
-      w:6+Math.random()*8, h:8+Math.random()*10,
-      vy:2+Math.random()*3.5, vx:(Math.random()-0.5)*2.4,
-      rot:Math.random()*Math.PI, vr:(Math.random()-0.5)*0.25,
-      color:CONF_COLORS[Math.floor(Math.random()*CONF_COLORS.length)]});
-  }
-  if(!confettiRunning){ confettiRunning=true; requestAnimationFrame(confettiTick); }
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+  for(let i=0;i<n;i++)pieces.push({x:Math.random()*canvas.width,y:-20-Math.random()*canvas.height*.4,w:6+Math.random()*8,h:8+Math.random()*10,vy:2+Math.random()*3.5,vx:(Math.random()-.5)*2.4,rot:Math.random()*Math.PI,vr:(Math.random()-.5)*.25,color:CC[Math.floor(Math.random()*CC.length)]});
+  if(!confettiRunning){confettiRunning=true;requestAnimationFrame(tick);}
 }
-function confettiTick(){
+function tick(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
-  pieces.forEach(p=>{ p.x+=p.vx; p.y+=p.vy; p.rot+=p.vr; p.vy+=0.03; });
+  pieces.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.rot+=p.vr;p.vy+=.03;});
   pieces=pieces.filter(p=>p.y<canvas.height+30);
-  pieces.forEach(p=>{ ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot); ctx.fillStyle=p.color; ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h); ctx.restore(); });
-  if(pieces.length){ requestAnimationFrame(confettiTick); } else { confettiRunning=false; ctx.clearRect(0,0,canvas.width,canvas.height); }
+  pieces.forEach(p=>{ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.fillStyle=p.color;ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);ctx.restore();});
+  if(pieces.length)requestAnimationFrame(tick);else{confettiRunning=false;ctx.clearRect(0,0,canvas.width,canvas.height);}
 }
 
-/* ---------- quiz state ---------- */
-let quiz = null;
-const PASS_NEEDED = 20;      // 80% of 25
-const MAX_WRONG   = 5;       // 6th wrong makes 80% impossible
-const CAR_EMOJIS = ["🚙","🚗","🏎️","🚕"];
-
-function shuffle(arr){
-  const a=arr.slice();
-  for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
-  return a;
-}
+/* quiz state */
+let quiz=null,selIdx=null;
+const PASS_NEEDED=20, MAX_WRONG=5, HEARTS=MAX_WRONG+1;
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 
 function startQuiz(mode){
   let ids;
-  if(mode===1){ ids = shuffle(BANK.map((_,i)=>i)).slice(0,25); }
-  else if(mode===2){ ids = shuffle(BANK.map((_,i)=>i)); }
-  else { ids = shuffle(reviewPool()); }
-  if(mode===3 && ids.length===0) return;
-
-  quiz = {
-    mode, queue: ids.slice(), total: ids.length,
-    answered:0, correct:0, wrong:0, streak:0,
-    records:{},           // id -> {timeMs, correct, unsure, skipped, picked}
-    startedAt: Date.now(), qStart: 0, currentId: null,
-    ended:false,
-  };
-  ids.forEach(id=> quiz.records[id]={timeMs:0, correct:null, unsure:false, skipped:false, picked:null});
-  $("hwCar").textContent = CAR_EMOJIS[Math.floor(Math.random()*CAR_EMOJIS.length)];
-  buildHearts();
+  if(mode===1)ids=shuffle(BANK.map((_,i)=>i)).slice(0,25);
+  else if(mode===2)ids=shuffle(BANK.map((_,i)=>i));
+  else ids=shuffle(reviewPool());
+  if(mode===3&&!ids.length)return;
+  quiz={mode,queue:ids.slice(),total:ids.length,answered:0,correct:0,wrong:0,streak:0,records:{},startedAt:Date.now(),qStart:0,currentId:null,ended:false};
+  ids.forEach(id=>quiz.records[id]={timeMs:0,correct:null,unsure:false,skipped:false,picked:null});
+  $("heartbox").style.display=mode===1?"":"none";
   show("quiz");
   nextQuestion();
 }
 
-function buildHearts(){
-  const h=$("hearts");
-  if(quiz.mode!==1){ h.innerHTML=""; return; }
-  h.innerHTML="";
-  for(let i=0;i<MAX_WRONG+1;i++){ const s=document.createElement("span"); s.textContent="❤️"; h.appendChild(s); }
-}
-function updateHearts(){
-  if(quiz.mode!==1) return;
-  [...$("hearts").children].forEach((s,i)=> s.classList.toggle("lost", i < quiz.wrong));
+function updateTop(){
+  const pct=quiz.total?Math.min(100,quiz.answered/quiz.total*100):0;
+  $("pfill").style.width=pct+"%";
+  if(quiz.mode===1)$("heartNum").textContent=Math.max(0,HEARTS-quiz.wrong);
 }
 
-function updateHighway(){
-  const pct = quiz.total ? Math.min(100, (quiz.answered/quiz.total)*100) : 0;
-  $("hwFill").style.width = pct+"%";
-  $("hwCar").style.left = pct+"%";
-}
-
-function updateStreak(){
-  $("streakNum").textContent = quiz.streak;
-  $("streakPill").classList.toggle("hot", quiz.streak>=3);
+function resetFooter(){
+  const f=$("qfooter");
+  f.classList.remove("good","bad");
+  f.querySelector(".skipcheck").style.display="flex";
+  $("fbActions").style.display="none";
+  $("checkBtn").disabled=true;
+  selIdx=null;
 }
 
 function nextQuestion(){
-  if(quiz.ended) return;
-  if(quiz.queue.length===0){ endQuiz(); return; }
-  const id = quiz.queue[0];
-  quiz.currentId = id;
-  const item = BANK[id], rec = quiz.records[id];
-
-  $("qCat").textContent = item.c;
-  $("qCount").textContent = `Question ${quiz.answered+1} of ${quiz.total}`;
-  const qt = $("qText");
-  qt.textContent = item.q;
-  qt.style.animation="none"; void qt.offsetWidth; qt.style.animation="";
-
-  const wrap = $("answers");
-  wrap.innerHTML="";
-  wrap.classList.toggle("grid2", item.o.every(o=>o.length<34));
-  const keys=["A","B","C","D"];
+  if(quiz.ended)return;
+  if(!quiz.queue.length){endQuiz();return;}
+  const id=quiz.queue[0];
+  quiz.currentId=id;
+  const item=BANK[id],rec=quiz.records[id];
+  $("qCat").textContent=item.c;
+  $("qText").textContent=item.q;
+  $("qCount").textContent=`Question ${quiz.answered+1} of ${quiz.total}`;
+  const wrap=$("choices");wrap.innerHTML="";
   item.o.forEach((opt,i)=>{
     const b=document.createElement("button");
-    b.className="answer";
-    b.innerHTML=`<span class="key">${keys[i]}</span>${opt}`;
-    b.onclick=()=>answer(i,b);
+    b.className="choice";
+    b.innerHTML=`<span class="knum">${i+1}</span>${opt}`;
+    b.onclick=()=>selectChoice(i,b);
     wrap.appendChild(b);
   });
-
-  // unsure toggle reflects sticky per-question flag
-  $("unsureBtn").classList.toggle("on", rec.unsure);
-  $("unsureBtn").innerHTML = rec.unsure ? "🤔 Marked unsure" : "🤔 Mark unsure";
-
-  // skip: each question may be skipped once; hide when nothing skippable remains
-  $("skipBtn").style.display = rec.skipped ? "none" : "";
-
-  updateHighway(); updateHearts(); updateStreak();
-  quiz.qStart = Date.now();
+  $("unsureBtn").classList.toggle("on",rec.unsure);
+  $("unsureBtn").textContent=rec.unsure?"🚩 Marked":"🚩 Unsure";
+  $("skipBtn").style.visibility=rec.skipped?"hidden":"visible";
+  resetFooter();
+  updateTop();
+  quiz.qStart=Date.now();
 }
 
-$("unsureBtn").onclick = ()=>{
-  const rec = quiz.records[quiz.currentId];
-  rec.unsure = !rec.unsure;
-  if(rec.unsure) session.unsureIds.add(quiz.currentId); else session.unsureIds.delete(quiz.currentId);
-  $("unsureBtn").classList.toggle("on", rec.unsure);
-  $("unsureBtn").innerHTML = rec.unsure ? "🤔 Marked unsure" : "🤔 Mark unsure";
+function selectChoice(i,el){
+  [...$("choices").children].forEach(b=>b.classList.remove("sel"));
+  el.classList.add("sel");
+  selIdx=i;
+  $("checkBtn").disabled=false;
+  sfx.select();
+}
+
+$("unsureBtn").onclick=()=>{
+  const rec=quiz.records[quiz.currentId];
+  rec.unsure=!rec.unsure;
+  if(rec.unsure)session.unsureIds.add(quiz.currentId);else session.unsureIds.delete(quiz.currentId);
+  $("unsureBtn").classList.toggle("on",rec.unsure);
+  $("unsureBtn").textContent=rec.unsure?"🚩 Marked":"🚩 Unsure";
   beep([520],0.06,"sine",0.08);
 };
 
-$("skipBtn").onclick = ()=>{
-  const id = quiz.queue.shift();
-  const rec = quiz.records[id];
-  rec.skipped = true;
-  rec.timeMs += Date.now()-quiz.qStart;
-  quiz.queue.push(id);          // comes back at the end
+$("skipBtn").onclick=()=>{
+  const id=quiz.queue.shift(),rec=quiz.records[id];
+  rec.skipped=true;
+  rec.timeMs+=Date.now()-quiz.qStart;
+  quiz.queue.push(id);
   sfx.skip();
   nextQuestion();
 };
 
-function answer(i, btnEl){
-  const id = quiz.currentId, item = BANK[id], rec = quiz.records[id];
-  rec.timeMs += Date.now()-quiz.qStart;
-  rec.picked = i;
-  const isCorrect = i===item.a;
-  rec.correct = isCorrect;
+$("checkBtn").onclick=()=>{
+  if(selIdx===null)return;
+  const id=quiz.currentId,item=BANK[id],rec=quiz.records[id];
+  rec.timeMs+=Date.now()-quiz.qStart;
+  rec.picked=selIdx;
+  const ok=selIdx===item.a;
+  rec.correct=ok;
   quiz.queue.shift();
   quiz.answered++;
-
-  const btns=[...$("answers").children];
+  const btns=[...$("choices").children];
   btns.forEach(b=>b.disabled=true);
-  btns[item.a].classList.add("correct");
-  if(!isCorrect) btnEl.classList.add("wrong");
-  btns.forEach((b,j)=>{ if(j!==item.a && j!==i) b.classList.add("dim"); });
-
-  if(isCorrect){
-    quiz.correct++; quiz.streak++;
-    session.xp += 10 + (quiz.streak>=3 ? 5 : 0);
-    session.bestStreak = Math.max(session.bestStreak, quiz.streak);
-    // mastered in Trouble Spots? clear it (unless she flagged it unsure right now)
-    if(quiz.mode===3 && !rec.unsure){ session.wrongIds.delete(id); session.unsureIds.delete(id); }
+  btns[item.a].classList.add("right");
+  btns[item.a].classList.remove("sel");
+  if(!ok){btns[selIdx].classList.add("miss");btns[selIdx].classList.remove("sel");}
+  btns.forEach((b,j)=>{if(j!==item.a&&j!==selIdx)b.classList.add("faded");});
+  if(ok){
+    quiz.correct++;quiz.streak++;
+    session.xp+=10+(quiz.streak>=3?5:0);
+    session.bestStreak=Math.max(session.bestStreak,quiz.streak);
+    if(quiz.mode===3&&!rec.unsure){session.wrongIds.delete(id);session.unsureIds.delete(id);}
     sfx.correct();
-    if(quiz.streak>0 && quiz.streak%5===0) confetti(50);
+    if(quiz.streak%5===0)confetti(50);
   }else{
-    quiz.wrong++; quiz.streak=0;
+    quiz.wrong++;quiz.streak=0;
     session.wrongIds.add(id);
     sfx.wrong();
-    if(navigator.vibrate) navigator.vibrate(120);
+    if(navigator.vibrate)navigator.vibrate(120);
   }
-  updateHighway(); updateHearts(); updateStreak();
-  showSheet(isCorrect, item);
-}
-
-const STREAK_LINES=["Nice!","You're on a roll! 🔥","Cruising!","Green lights all the way!","Unstoppable! ⚡️"];
-function showSheet(good, item){
-  const sheet=$("sheet");
-  sheet.classList.remove("good","bad");
-  sheet.classList.add(good?"good":"bad");
-  $("sheetEmoji").textContent = good ? ["🎉","✅","🌟","💚","🙌"][Math.floor(Math.random()*5)] : "💡";
-  $("sheetTitle").textContent = good
-    ? (quiz.streak>=3 ? STREAK_LINES[Math.min(4,Math.floor(quiz.streak/3))] : "Correct!")
-    : "Not quite!";
-  $("sheetExp").innerHTML = good
-    ? item.e
-    : `The answer is <b>${item.o[item.a]}</b>. ${item.e}`;
-  sheet.classList.add("show");
-}
-$("continueBtn").onclick = ()=>{
-  $("sheet").classList.remove("show");
-  // early-end checks for Quick Test
-  if(quiz.mode===1){
-    if(quiz.correct>=PASS_NEEDED){ setTimeout(()=>endQuiz(true),250); return; }
-    if(quiz.wrong>MAX_WRONG){ setTimeout(()=>endQuiz(false,true),250); return; }
-  }
-  setTimeout(nextQuestion,180);
+  updateTop();
+  const f=$("qfooter");
+  f.classList.add(ok?"good":"bad");
+  f.querySelector(".skipcheck").style.display="none";
+  $("fbActions").style.display="flex";
+  $("fbIcon").textContent=ok?"✓":"✗";
+  const streakLines=["Nicely done!","You're on a roll! 🔥","Excellent!","Green lights all the way!","Unstoppable! ⚡️"];
+  $("fbTitle").textContent=ok?(quiz.streak>=3?streakLines[Math.min(4,Math.floor(quiz.streak/3))]:"Nicely done!"):"Correct answer:";
+  $("fbExp").innerHTML=ok?item.e:`<b>${item.o[item.a]}</b> — ${item.e}`;
 };
 
-/* ---------- quit ---------- */
-$("quitBtn").onclick=()=> $("quitModal").classList.add("show");
-$("cancelQuit").onclick=()=> $("quitModal").classList.remove("show");
+$("continueBtn").onclick=()=>{
+  if(quiz.mode===1){
+    if(quiz.correct>=PASS_NEEDED){endQuiz(true);return;}
+    if(quiz.wrong>MAX_WRONG){endQuiz(false,true);return;}
+  }
+  nextQuestion();
+};
+
+/* quit */
+$("quitBtn").onclick=()=>$("quitModal").classList.add("show");
+$("cancelQuit").onclick=()=>$("quitModal").classList.remove("show");
 $("confirmQuit").onclick=()=>{
   $("quitModal").classList.remove("show");
-  $("sheet").classList.remove("show");
   quiz.ended=true;
-  refreshHome(); show("home");
+  refreshHome();show("home");
 };
 
-/* ---------- results ---------- */
-function fmtSecs(ms){ const s=ms/1000; return s>=60 ? `${Math.floor(s/60)}m ${Math.round(s%60)}s` : `${s.toFixed(1)}s`; }
-
-function endQuiz(earlyPass=false, earlyFail=false){
+/* results */
+const fmt=ms=>{const s=ms/1000;return s>=60?`${Math.floor(s/60)}:${String(Math.round(s%60)).padStart(2,"0")}`:`${s.toFixed(1)}s`;};
+function endQuiz(earlyPass=false,earlyFail=false){
   quiz.ended=true;
-  $("sheet").classList.remove("show");
-  const answeredIds = Object.keys(quiz.records).map(Number).filter(id=>quiz.records[id].correct!==null);
-  const pct = answeredIds.length ? Math.round(quiz.correct/answeredIds.length*100) : 0;
-  const wrongOnes = answeredIds.filter(id=>quiz.records[id].correct===false);
-  const unsureOnes = answeredIds.filter(id=>quiz.records[id].unsure);
-  const skippedCount = Object.values(quiz.records).filter(r=>r.skipped).length;
-  const slow = answeredIds.slice().sort((a,b)=>quiz.records[b].timeMs-quiz.records[a].timeMs).slice(0,5)
-                 .filter(id=>quiz.records[id].timeMs>=8000);
-  const passed = quiz.mode===1 ? (quiz.correct>=PASS_NEEDED || (!earlyFail && pct>=80)) : pct>=80;
+  const ansIds=Object.keys(quiz.records).map(Number).filter(id=>quiz.records[id].correct!==null);
+  const pct=ansIds.length?Math.round(quiz.correct/ansIds.length*100):0;
+  const wrongOnes=ansIds.filter(id=>quiz.records[id].correct===false);
+  const unsureOnes=ansIds.filter(id=>quiz.records[id].unsure);
+  const skipped=Object.values(quiz.records).filter(r=>r.skipped).length;
+  const slow=ansIds.slice().sort((a,b)=>quiz.records[b].timeMs-quiz.records[a].timeMs).slice(0,5).filter(id=>quiz.records[id].timeMs>=8000);
+  const passed=quiz.mode===1?quiz.correct>=PASS_NEEDED:pct>=80;
 
-  // Hero copy
-  if(quiz.mode===1 && earlyFail){
-    $("resEmoji").textContent="🫂";
-    $("resTitle").textContent="This one wasn't your ride.";
-    $("resTitle").style.color="var(--red-dk)";
-    $("resSub").textContent="Hey — even the best drivers stall sometimes. You just found "+quiz.wrong+" things to learn before test day, and that's exactly what practice is for. Everything below is saved in Trouble Spots so we can tackle it together. 💪";
+  const t=$("resTitle");t.className="res-title";
+  if(quiz.mode===1&&earlyFail){
+    $("resOwl").textContent="🥺";
+    t.textContent="You ran out of hearts!";t.classList.add("sad");
+    $("resSub").textContent=`Hey — even the best drivers stall sometimes. You just found ${quiz.wrong} things to study before the real test, and that's exactly what practice is for. They're all saved in Trouble Spots. One more lap? 💪`;
     sfx.lose();
-  } else if(passed){
-    $("resEmoji").textContent = earlyPass ? "🏆" : "🎉";
-    $("resTitle").textContent = earlyPass ? "80% locked in — you passed early!" : "You passed!";
-    $("resTitle").style.color="var(--green-dk)";
-    $("resSub").textContent = earlyPass
-      ? "You hit "+PASS_NEEDED+" correct with questions to spare, so we're calling it here. That's real-test passing form. 🚦"
-      : "You'd pass the real thing with this score. Keep this energy for test day!";
-    confetti(160); sfx.win();
-  } else {
-    $("resEmoji").textContent="🌱";
-    $("resTitle").textContent="So close — keep going!";
-    $("resTitle").style.color="var(--gold-dk)";
-    $("resSub").textContent="You scored "+pct+"%. The pass line is 80%, and everything you missed is waiting in Trouble Spots. A couple more laps and you've got this.";
+  }else if(passed){
+    $("resOwl").textContent=earlyPass?"🤩":"🥳";
+    t.textContent=earlyPass?"80% locked in — you passed early!":"Lesson complete!";
+    $("resSub").textContent=earlyPass
+      ?`You hit ${PASS_NEEDED} correct with questions to spare, so we're calling it here. That is real-test passing form! 🚗💨`
+      :"That score passes the real NC knowledge test. Keep this energy for test day!";
+    confetti(160);sfx.win();
+  }else{
+    $("resOwl").textContent="🙂";
+    t.textContent="So close — keep going!";t.classList.add("grow");
+    $("resSub").textContent=`You scored ${pct}%. The pass line is 80%, and everything you missed is waiting in Trouble Spots. A couple more laps and you've got this.`;
     sfx.lose();
   }
 
-  // Stats
-  const stats=[
-    {n:pct+"%", l:"Score", cls: passed&&!earlyFail?"green":"red"},
-    {n:quiz.correct+"/"+answeredIds.length, l:"Correct", cls:"green"},
-    {n:wrongOnes.length, l:"Missed", cls:"red"},
-    {n:unsureOnes.length, l:"Marked unsure", cls:"gold"},
-    {n:skippedCount, l:"Skipped", cls:"blue"},
-    {n:fmtSecs(Date.now()-quiz.startedAt), l:"Total time", cls:"purple"},
-  ];
-  $("statRow").innerHTML = stats.map(s=>`<div class="stat ${s.cls}"><div class="num">${s.n}</div><div class="lbl">${s.l}</div></div>`).join("");
+  const xpEarned=quiz.correct*10;
+  $("tiles").innerHTML=`
+    <div class="tile gold"><div class="t-head">Total XP</div><div class="t-body">⚡ ${xpEarned}</div></div>
+    <div class="tile blue"><div class="t-head">Speedy</div><div class="t-body">⏱ ${fmt(Date.now()-quiz.startedAt)}</div></div>
+    <div class="tile ${pct>=80?"green":"red"}"><div class="t-head">${pct>=80?"Amazing":"Score"}</div><div class="t-body">🎯 ${pct}%</div></div>`;
+  $("chips").innerHTML=`
+    <span class="chip">✅ ${quiz.correct} correct</span>
+    <span class="chip">❌ ${wrongOnes.length} missed</span>
+    <span class="chip">🚩 ${unsureOnes.length} unsure</span>
+    <span class="chip">↷ ${skipped} skipped</span>`;
 
-  // Sections
   let html="";
   if(wrongOnes.length){
-    html+=`<div class="res-section"><div class="res-h">❌ Questions you missed</div>`+
-      wrongOnes.map(id=>{
-        const it=BANK[id], r=quiz.records[id];
-        return `<div class="review-card"><div class="rq">${it.q}</div>
-          <div class="ra">You picked: ${it.o[r.picked]}</div>
-          <div class="rc">Correct: ${it.o[it.a]}</div>
-          <div class="badges">${r.unsure?'<span class="mini-badge mb-unsure">marked unsure</span>':""}${r.skipped?'<span class="mini-badge mb-skip">skipped first</span>':""}<span class="mini-badge mb-time">${fmtSecs(r.timeMs)}</span></div>
-        </div>`;
-      }).join("")+`</div>`;
+    html+=`<div class="res-h">❌ Questions you missed</div>`+wrongOnes.map(id=>{
+      const it=BANK[id],r=quiz.records[id];
+      return `<div class="rcard"><div class="rq">${it.q}</div>
+        <div class="ra">You picked: ${it.o[r.picked]}</div>
+        <div class="rc">Correct: ${it.o[it.a]}</div>
+        <div class="badges">${r.unsure?'<span class="mini m-unsure">marked unsure</span>':""}${r.skipped?'<span class="mini m-skip">skipped first</span>':""}<span class="mini m-time">${fmt(r.timeMs)}</span></div></div>`;
+    }).join("");
   }
   if(slow.length){
-    html+=`<div class="res-section"><div class="res-h">🐢 Questions that slowed you down</div>`+
-      slow.map(id=>{
-        const it=BANK[id], r=quiz.records[id];
-        return `<div class="review-card"><div class="rq">${it.q}</div>
-          <div class="badges"><span class="mini-badge mb-time">${fmtSecs(r.timeMs)}</span><span class="mini-badge ${r.correct?"mb-time":"mb-skip"}">${r.correct?"got it right":"missed it"}</span>${r.skipped?'<span class="mini-badge mb-skip">skipped first</span>':""}</div>
-        </div>`;
-      }).join("")+`</div>`;
+    html+=`<div class="res-h">🐢 Took the most time</div>`+slow.map(id=>{
+      const it=BANK[id],r=quiz.records[id];
+      return `<div class="rcard"><div class="rq">${it.q}</div>
+        <div class="badges"><span class="mini m-time">${fmt(r.timeMs)}</span><span class="mini ${r.correct?"m-good":"m-skip"}">${r.correct?"got it right":"missed it"}</span>${r.skipped?'<span class="mini m-skip">skipped first</span>':""}</div></div>`;
+    }).join("");
   }
   if(unsureOnes.length){
-    html+=`<div class="res-section"><div class="res-h">🤔 Marked unsure</div>`+
-      unsureOnes.map(id=>{
-        const it=BANK[id], r=quiz.records[id];
-        return `<div class="review-card"><div class="rq">${it.q}</div>
-          <div class="rc">Answer: ${it.o[it.a]} — ${r.correct?"and you got it!":"one to review."}</div>
-        </div>`;
-      }).join("")+`</div>`;
+    html+=`<div class="res-h">🚩 Marked unsure</div>`+unsureOnes.map(id=>{
+      const it=BANK[id],r=quiz.records[id];
+      return `<div class="rcard"><div class="rq">${it.q}</div>
+        <div class="rc">Answer: ${it.o[it.a]} — ${r.correct?"and you got it!":"one to review."}</div></div>`;
+    }).join("");
   }
-  if(!html){
-    html=`<div class="empty-note">Clean sweep — nothing missed, nothing unsure, nothing skipped. Absolute legend. 🏅</div>`;
-  }
+  if(!html)html=`<div class="empty-note">Clean sweep — nothing missed, nothing unsure, nothing skipped. Absolute legend. 🏅</div>`;
   $("resSections").innerHTML=html;
-
-  $("troubleBtn").style.display = reviewPool().length ? "" : "none";
+  $("troubleBtn").style.display=reviewPool().length?"":"none";
   refreshHome();
   show("results");
 }
 
-/* ---------- wiring ---------- */
+/* wiring */
 $("mode1").onclick=()=>startQuiz(1);
 $("mode2").onclick=()=>startQuiz(2);
-$("mode3").onclick=()=>{ if(reviewPool().length) startQuiz(3); };
-$("againBtn").onclick=()=>startQuiz(quiz.mode===3 && reviewPool().length===0 ? 1 : quiz.mode);
+$("mode3").onclick=()=>{if(reviewPool().length)startQuiz(3);};
+$("tabLearn").onclick=()=>{refreshHome();show("home");};
+$("tabReview").onclick=()=>{if(reviewPool().length)startQuiz(3);};
+$("tabQuest").onclick=()=>startQuiz(2);
+$("againBtn").onclick=()=>startQuiz(quiz.mode===3&&!reviewPool().length?1:quiz.mode);
 $("troubleBtn").onclick=()=>startQuiz(3);
-$("homeBtn").onclick=()=>{ refreshHome(); show("home"); };
-
+$("homeBtn").onclick=()=>{refreshHome();show("home");};
 refreshHome();
 </script>
 </body>
